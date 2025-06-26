@@ -43,37 +43,37 @@
                         <ul class="metismenu list-unstyled" id="side-menu">
 
                             <li>
-                                <a href="javascript: void(0);" class="has-arrow waves-effect">
+                                <a href="<?= urlOf("pages/index.php") ?>" class="has-arrow waves-effect">
                                     <i class="bx bx-home-circle"></i>
                                     <span key="t-dashboards">Dashboards</span>
                                 </a>
                             </li>
                             <li>
-                                <a href="javascript: void(0);" class="has-arrow waves-effect">
+                                <a href="<?= urlOf("pages/services/index.php") ?>" class="has-arrow waves-effect">
                                     <i class="bx bx-home-circle"></i>
                                     <span key="t-dashboards">Services</span>
                                 </a>
                             </li>
                             <li>
-                                <a href="javascript: void(0);" class="has-arrow waves-effect">
+                                <a href="<?= urlOf("pages/clients/index.php") ?>" class="has-arrow waves-effect">
                                     <i class="bx bx-home-circle"></i>
                                     <span key="t-dashboards">Clients</span>
                                 </a>
                             </li>
                             <li>
-                                <a href="javascript: void(0);" class="has-arrow waves-effect">
+                                <a href="<?= urlOf("pages/employees/index.php") ?>" class="has-arrow waves-effect">
                                     <i class="bx bx-home-circle"></i>
                                     <span key="t-dashboards">Employee</span>
                                 </a>
                             </li>
                             <li>
-                                <a href="javascript: void(0);" class="has-arrow waves-effect">
+                                <a href="<?= urlOf("pages/appointments/index.php") ?>" class="has-arrow waves-effect">
                                     <i class="bx bx-home-circle"></i>
                                     <span key="t-dashboards">Appointment</span>
                                 </a>
                             </li>
                             <li>
-                                <a href="javascript: void(0);" class="has-arrow waves-effect">
+                                <a href="<?= urlOf("pages/products/index.php") ?>" class="has-arrow waves-effect">
                                     <i class="bx bx-home-circle"></i>
                                     <span key="t-dashboards">Products</span>
                                 </a>

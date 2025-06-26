@@ -6,6 +6,8 @@
 <script src="<?= urlOf("assets/libs/apexcharts/apexcharts.min.js") ?>"></script>
 <script src="<?= urlOf("assets/js/pages/dashboard.init.js") ?>"></script>
 <script src="<?= urlOf("assets/js/app.js") ?>"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+
 <!-- 
         <script src="assets/libs/jquery/jquery.min.js"></script>
         <script src="assets/libs/bootstrap/js/bootstrap.bundle.min.js"></script>
