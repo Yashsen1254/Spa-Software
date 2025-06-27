@@ -1,10 +1,11 @@
 <?php
 
-require '../../../includes/init.php';
+require '../../includes/init.php';
 include pathOf("includes/header.php");
-include pathOf("includes/salessidebar.php");
+include pathOf("includes/navbar.php");
+
 $index = 0;
-$appointments = select("SELECT * FROM Appointments");
+$appointments = select("SELECT Appointments.*, Clients.Name AS ClientName, Employee.Name AS EmployeeName FROM Appointments JOIN Clients ON Appointments.ClientId = Clients.Id JOIN Employee ON Appointments.EmployeeId = Employee.Id AND Appointments.IsDelete = 1");
 
 ?>
     <body data-sidebar="dark">
@@ -53,7 +54,7 @@ $appointments = select("SELECT * FROM Appointments");
 
                                     <div class="page-title-right">
                                         <ol class="breadcrumb m-0">
-                                            <a href="<?= urlOf("pages/sales/services/add.php") ?>" class="btn btn-primary w-md">Add Services</a>
+                                            <a href="<?= urlOf("pages/appointments/add.php") ?>" class="btn btn-primary w-md">Add Appointment</a>
                                         </ol>
                                     </div>
 
@@ -77,25 +78,29 @@ $appointments = select("SELECT * FROM Appointments");
                                                 <th>Room No</th>
                                                 <th>Date</th>
                                                 <th>Time</th>
+                                                <th>Status</th>
+                                                <th>Update</th>
                                                 <th>Delete</th>
                                             </tr>
                                             </thead>
                                             <tbody>
-                                            <?php foreach($services as $service) : ?>
+                                            <?php foreach($appointments as $appointment) : ?>
                                                 <tr>
                                                     <td><?= $index += 1 ?></td>
-                                                    <td><?= $service["Name"] ?></td>
-                                                    <td><?= $service["Description"] ?></td>
-                                                    <td><?= $service["Price"] ?></td>
-                                                    <td><?= $service["Duration"] ?></td>
+                                                    <td><?= $appointment["ClientName"] ?></td>
+                                                    <td><?= $appointment["EmployeeName"] ?></td>
+                                                    <td><?= $appointment["RoomNo"] ?></td>
+                                                    <td><?= $appointment["AppointmentDate"] ?></td>
+                                                    <td><?= $appointment["AppointmentTime"] ?></td>
+                                                    <td><?= $appointment["Status"] ?></td>
                                                     <form action="update.php" method="POST">
                                                         <td>
-                                                            <input type="hidden" name="Id" id="Id" value="<?= $service['Id'] ?>">
+                                                            <input type="hidden" name="Id" id="Id" value="<?= $appointment['Id'] ?>">
                                                             <button type="submit" class="btn btn-primary w-md">UPDATE</button>
                                                         </td>
                                                     </form>
                                                     <td>
-                                                        <button type="submit" class="btn btn-primary w-md" onclick="deleteData(<?= $service['Id'] ?>)">DELETE</button>
+                                                        <button type="submit" class="btn btn-primary w-md" onclick="deleteData(<?= $appointment['Id'] ?>)">DELETE</button>
                                                     </td>
                                                 </tr>
                                             <?php endforeach; ?>
@@ -119,8 +124,9 @@ $appointments = select("SELECT * FROM Appointments");
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
 <script>
     function deleteData(Id) {
+        console.log(Id);
         $.ajax({
-            url: '../../../api/sales/services/delete.php',
+            url: '../../api/appointment/delete.php',
             type: 'POST',
             data: {
                 Id: Id
