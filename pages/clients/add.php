@@ -1,8 +1,8 @@
 <?php
 
-require '../../../includes/init.php';
+require '../../includes/init.php';
 include pathOf("includes/header.php");
-include pathOf("includes/salessidebar.php");
+include pathOf("includes/navbar.php");
 
 $services = select("SELECT * FROM Services")
 
@@ -118,7 +118,7 @@ $services = select("SELECT * FROM Services")
                                                     <label>Service Type</label>
                                                     <select class="form-select" id="ServiceId" name="ServiceId">
                                                         <option selected>Select Service Type</option>
-                                                        <?php foreach($services as $service) : ?>
+                                                        <?php foreach ($services as $service) : ?>
                                                             <option value="<?= $service['Id'] ?>"><?= $service['Name'] ?></option>
                                                         <?php endforeach; ?>
                                                     </select>
@@ -151,7 +151,11 @@ $services = select("SELECT * FROM Services")
             </div>
             <!-- End Page-content -->
         </div>
-        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+        
+        <?php
+        include pathOf("includes/scripts.php");
+        ?>
+
         <script>
             function insertData() {
                 var Name = $('#Name').val();
@@ -167,7 +171,7 @@ $services = select("SELECT * FROM Services")
                 var IsDelete = $('#IsDelete').val();
 
                 $.ajax({
-                    url: '../../../api/sales/clients/insert.php',
+                    url: '../../api/clients/insert.php',
                     type: 'POST',
                     data: {
                         Name: Name,
@@ -183,6 +187,7 @@ $services = select("SELECT * FROM Services")
                         IsDelete: IsDelete
                     },
                     success: function(response) {
+                        alert("Client Added Successfully");
                         window.location.href = 'index.php';
                     },
                     error: function(response) {
@@ -191,3 +196,7 @@ $services = select("SELECT * FROM Services")
                 })
             }
         </script>
+
+        <?php
+        include pathOf("includes/pageend.php");
+        ?>

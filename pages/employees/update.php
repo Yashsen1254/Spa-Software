@@ -81,7 +81,7 @@ $employee = selectOne("SELECT * FROM Employee WHERE Id = $Id");
                             <img src="<?= urlOf("assets/uploads/" . $employee['AddharCardImageFileName']) ?>" alt="" height="200" width="250">
                         </div>
                     </div>
-
+                    <input type="hidden" name="Id" value="<?= $employee['Id'] ?>">
                     <button type="submit" class="btn btn-primary">Submit</button>
                 </form>
 
@@ -98,7 +98,7 @@ document.getElementById("employeeForm").addEventListener("submit", function (eve
     var formData = new FormData(this);
 
     $.ajax({
-        url: '../../api/employees/insert.php',
+        url: '../../api/employees/update.php',
         type: 'POST',
         data: formData,
         processData: false,

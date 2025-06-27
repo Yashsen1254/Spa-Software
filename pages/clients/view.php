@@ -1,10 +1,12 @@
 <?php
 
-require '../../../includes/init.php';
+require '../../includes/init.php';
 include pathOf("includes/header.php");
-include pathOf("includes/salessidebar.php");
+include pathOf("includes/navbar.php");
+
+$Id = $_POST["Id"];
 $index = 0;
-$clients = select("SELECT Clients.*, Services.Name AS ServiceName FROM Clients INNER JOIN Services ON Clients.ServiceId = Services.Id");
+$clients = select("SELECT Clients.*, Services.Name AS ServiceName FROM Clients INNER JOIN Services ON Clients.ServiceId = Services.Id WHERE Clients.IsDelete = 1 AND Clients.Id = $Id");
 
 ?>
     <body data-sidebar="dark">
@@ -116,4 +118,11 @@ $clients = select("SELECT Clients.*, Services.Name AS ServiceName FROM Clients I
         <!-- Right bar overlay-->
         <div class="rightbar-overlay"></div>
 
-        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+  
+        
+<?php
+
+include pathOf("includes/scripts.php");
+include pathOf("includes/pageend.php");
+
+?>

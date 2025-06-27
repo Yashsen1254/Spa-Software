@@ -1,8 +1,9 @@
 <?php
 
-require '../../../includes/init.php';
+require '../../includes/init.php';
 include pathOf("includes/header.php");
-include pathOf("includes/salessidebar.php");
+include pathOf("includes/navbar.php");
+
 $index = 0;
 $services = select("SELECT * FROM Services");
 
@@ -53,7 +54,7 @@ $services = select("SELECT * FROM Services");
 
                                     <div class="page-title-right">
                                         <ol class="breadcrumb m-0">
-                                            <a href="<?= urlOf("pages/sales/services/add.php") ?>" class="btn btn-primary w-md">Add Services</a>
+                                            <a href="<?= urlOf("pages/services/add.php") ?>" class="btn btn-primary w-md">Add Services</a>
                                         </ol>
                                     </div>
 
@@ -116,11 +117,10 @@ $services = select("SELECT * FROM Services");
         <!-- Right bar overlay-->
         <div class="rightbar-overlay"></div>
 
-        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
 <script>
     function deleteData(Id) {
         $.ajax({
-            url: '../../../api/sales/services/delete.php',
+            url: '../../api/services/delete.php',
             type: 'POST',
             data: {
                 Id: Id
@@ -136,3 +136,10 @@ $services = select("SELECT * FROM Services");
         })
     }
 </script>
+
+<?php
+
+include pathOf("includes/scripts.php");
+include pathOf("includes/pageend.php");
+
+?>

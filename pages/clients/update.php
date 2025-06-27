@@ -1,8 +1,9 @@
 <?php
 
-require '../../../includes/init.php';
+require '../../includes/init.php';
 include pathOf("includes/header.php");
-include pathOf("includes/salessidebar.php");
+include pathOf("includes/navbar.php");
+
 
 $Id = $_POST["Id"];
 $clients = selectOne("SELECT * FROM Clients WHERE Id = $Id");
@@ -155,7 +156,6 @@ $services = select("SELECT * FROM Services");
             </div>
             <!-- End Page-content -->
         </div>
-        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
         <script>
             function insertData() {
                 var Id = $('#Id').val();
@@ -172,7 +172,7 @@ $services = select("SELECT * FROM Services");
                 var IsDelete = $('#IsDelete').val();
 
                 $.ajax({
-                    url: '../../../api/sales/clients/update.php',
+                    url: '../../api/clients/update.php',
                     type: 'POST',
                     data: {
                         Id: Id,
@@ -197,3 +197,12 @@ $services = select("SELECT * FROM Services");
                 })
             }
         </script>
+
+
+
+<?php
+
+include pathOf("includes/scripts.php");
+include pathOf("includes/pageend.php");
+
+?>

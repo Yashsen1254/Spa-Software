@@ -1,11 +1,11 @@
 <?php
 
-require '../../../includes/init.php';
+require '../../includes/init.php';
 include pathOf("includes/header.php");
-include pathOf("includes/salessidebar.php");
+include pathOf("includes/navbar.php");
 
 $Id = $_POST["Id"];
-$services = selectOne("SELECT * FROM Services WHERE Id = $Id")
+$services = selectOne("SELECT * FROM Services WHERE Id = $Id");
 
 ?>
     <body data-sidebar="dark">
@@ -65,12 +65,12 @@ $services = selectOne("SELECT * FROM Services WHERE Id = $Id")
                                     <div class="card-body">
 
                                         <form>
-                                            <input type="hidden" id="Id" name="Id" value="<?= $services['Id']; ?>">
                                             <div class="mb-3">
                                                 <label for="formrow-firstname-input" class="form-label">Name</label>
                                                 <input type="text" class="form-control" id="Name" name="Name" placeholder="Enter Service Name" value="<?= $services["Name"] ?>">
                                             </div>
-
+                                            <input type="hidden" id="Id" name="Id" value="<?= $services['Id']; ?>">
+                                            
                                             <div class="row">
                                                 
                                                 <div class="col-md-6">
@@ -107,17 +107,21 @@ $services = selectOne("SELECT * FROM Services WHERE Id = $Id")
                 </div>
                 <!-- End Page-content -->
             </div>
-<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+<?php
+include pathOf("includes/scripts.php");
+?>
+
 <script>    
-    function updateData() {
+    function updateData() {        
         var Id = $('#Id').val();
         var Name = $('#Name').val();
         var Description = $('#Description').val();
         var Price = $('#Price').val();
         var Duration = $('#Duration').val();
-
+        console.log(Id, Name, Description, Price, Duration);
+        
         $.ajax({
-            url: '../../../api/sales/services/update.php',
+            url: '../../api/services/update.php',
             type: 'POST',
             data: {
                 Id: Id,
@@ -127,6 +131,7 @@ $services = selectOne("SELECT * FROM Services WHERE Id = $Id")
                 Duration: Duration
             },
             success: function(response) {
+                alert("Service Updated Successfully");
                 window.location.href = 'index.php';
             },
             error: function(response) {
@@ -135,3 +140,10 @@ $services = selectOne("SELECT * FROM Services WHERE Id = $Id")
         })
     }
 </script>
+
+
+<?php
+
+include pathOf("includes/pageend.php");
+
+?>

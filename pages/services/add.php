@@ -1,8 +1,8 @@
 <?php
 
-require '../../../includes/init.php';
+require '../../includes/init.php';
 include pathOf("includes/header.php");
-include pathOf("includes/salessidebar.php");
+include pathOf("includes/navbar.php");
 
 ?>
     <body data-sidebar="dark">
@@ -103,7 +103,9 @@ include pathOf("includes/salessidebar.php");
                 </div>
                 <!-- End Page-content -->
             </div>
-<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+<?php
+include pathOf("includes/scripts.php");
+?>
 <script>    
     function insertData() {
         var Name = $('#Name').val();
@@ -112,7 +114,7 @@ include pathOf("includes/salessidebar.php");
         var Duration = $('#Duration').val();
 
         $.ajax({
-            url: '../../../api/sales/services/insert.php',
+            url: '../../api/services/insert.php',
             type: 'POST',
             data: {
                 Name: Name,
@@ -121,6 +123,7 @@ include pathOf("includes/salessidebar.php");
                 Duration: Duration
             },
             success: function(response) {
+                alert("Service Added Successfully");
                 window.location.href = 'index.php';
             },
             error: function(response) {
@@ -129,3 +132,9 @@ include pathOf("includes/salessidebar.php");
         })
     }
 </script>
+
+<?php
+
+include pathOf("includes/pageend.php");
+
+?>

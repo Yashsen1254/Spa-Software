@@ -1,8 +1,9 @@
 <?php
 
-require '../../../includes/init.php';
+require '../../includes/init.php';
 include pathOf("includes/header.php");
-include pathOf("includes/salessidebar.php");
+include pathOf("includes/navbar.php");
+
 $index = 0;
 $clients = select("SELECT * FROM Clients WHERE IsDelete = 1");
 
@@ -53,7 +54,7 @@ $clients = select("SELECT * FROM Clients WHERE IsDelete = 1");
 
                                     <div class="page-title-right">
                                         <ol class="breadcrumb m-0">
-                                            <a href="<?= urlOf("pages/sales/clients/add.php") ?>" class="btn btn-primary w-md">Add Clients</a>
+                                            <a href="<?= urlOf("pages/clients/add.php") ?>" class="btn btn-primary w-md">Add Clients</a>
                                         </ol>
                                     </div>
 
@@ -121,12 +122,13 @@ $clients = select("SELECT * FROM Clients WHERE IsDelete = 1");
         </div>
         <!-- Right bar overlay-->
         <div class="rightbar-overlay"></div>
-
-        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+<?php
+include pathOf("includes/scripts.php");
+?>
 <script>
     function deleteData(Id) {
         $.ajax({
-            url: '../../../api/sales/clients/delete.php',
+            url: '../../api/clients/delete.php',
             type: 'POST',
             data: {
                 Id: Id
@@ -142,3 +144,10 @@ $clients = select("SELECT * FROM Clients WHERE IsDelete = 1");
         })
     }
 </script>
+
+
+<?php
+
+include pathOf("includes/pageend.php");
+
+?>
