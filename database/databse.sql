@@ -54,6 +54,7 @@ CREATE TABLE `Appointments` (
     `AppointmentDate` DATETIME NOT NULL,
     `AppointmentTime` TIME NOT NULL,
     `Status` VARCHAR(100) NOT NULL,
+    `IsDelete` INT NOT NULL DEFAULT 1,
     FOREIGN KEY (`ClientId`) REFERENCES `Clients`(`Id`),
     FOREIGN KEY (`EmployeeId`) REFERENCES `Employee`(`Id`)
 );
@@ -67,11 +68,19 @@ CREATE TABLE `Sales` (
 
 CREATE TABLE `Expenses` (
     `Id` INT PRIMARY KEY AUTO_INCREMENT,
-    `EmployeeId` INT NOT NULL,
+    `Name` VARCHAR(100) NOT NULL,
     `Description` VARCHAR(255) NOT NULL,
     `Date` DATE NOT NULL,
     `Price` DECIMAL(10, 2) NOT NULL,
     `Quantity` INT NOT NULL,
-    `TotalAmount` DECIMAL(10, 2) NOT NULL,
-    FOREIGN KEY (`EmployeeId`) REFERENCES `Employee`(`Id`)
+    `TotalAmount` DECIMAL(10, 2) NOT NULL
 );
+
+CREATE TABLE `TotalExpenses` (
+    `Id` INT PRIMARY KEY AUTO_INCREMENT,
+    `EmployeeId` INT NOT NULL,
+    `ExpenseId` INT NOT NULL,
+    `TotalAmount` DECIMAL(10, 2) NOT NULL,
+    FOREIGN KEY (`EmployeeId`) REFERENCES `Employee`(`Id`),
+    FOREIGN KEY (`ExpenseId`) REFERENCES `Expenses`(`Id`)
+)
