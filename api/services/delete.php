@@ -1,5 +1,5 @@
 <?php
-    require '../../../includes/init.php';
+    require '../../includes/init.php';
     header('Content-Type: application/json');
 
     $Id = $_POST['Id'];

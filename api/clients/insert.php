@@ -1,6 +1,6 @@
 <?php
 
-    require '../../../includes/init.php';
+    require '../../includes/init.php';
     header('Content-Type: application/json');
 
     $Name = $_POST['Name'];
