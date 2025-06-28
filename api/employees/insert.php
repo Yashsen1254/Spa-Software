@@ -15,6 +15,8 @@ $RelationAddress = $_POST['RelationAddress'] ?? '';
 $AddharCardNumber = $_POST['AddharCardNumber'] ?? '';
 $SalaryPaid = $_POST['SalaryPaid'] ?? '';
 $SalaryDue = $_POST['SalaryDue'] ?? '';
+$SalaryPaidDate = $_POST['SalaryPaidDate'] ?? '';
+$IsDelete = 1; // Default value for IsDelete
 
 // Handle image uploads
 $imageFileName = '';
@@ -36,14 +38,14 @@ if (isset($_FILES['AddharCardImageFileName']) && $_FILES['AddharCardImageFileNam
 
 // Insert into DB
 $query = "INSERT INTO Employee
-(Name, Mobile, Address, Age, Email, Relation, RelationName, RelationMobile, RelationAddress, ImageFileName, AddharCardImageFileName, AddharCardNumber, SalaryPaid, SalaryDue)
-VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+(Name, Mobile, Address, Age, Email, Relation, RelationName, RelationMobile, RelationAddress, ImageFileName, AddharCardImageFileName, AddharCardNumber, SalaryPaid, SalaryPaidDate, SalaryDue)
+VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
 $params = [
     $Name, $Mobile, $Address, $Age, $Email, $Relation,
     $RelationName, $RelationMobile, $RelationAddress,
     $imageFileName, $aadhaarFileName, $AddharCardNumber,
-    $SalaryPaid, $SalaryDue
+    $SalaryPaid, $SalaryPaidDate, $SalaryDue
 ];
 
 $result = execute($query, $params);
