@@ -121,13 +121,13 @@ $employees = select("SELECT * FROM Employee");
 <script>
     function deleteData(Id) {
         $.ajax({
-            url: '../../api/services/delete.php',
+            url: '../../api/employees/delete.php',
             type: 'POST',
             data: {
                 Id: Id
             },
             success: function(response) {
-                alert("Service Deleted Successfully");
+                alert("Employee Deleted Successfully");
                 location.reload();
             },
             error: function(response) {
