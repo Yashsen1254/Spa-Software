@@ -43,6 +43,7 @@ CREATE TABLE `Employee` (
     `AddharCardImageFileName` VARCHAR(255) NOT NULL,
     `AddharCardNumber` VARCHAR(20) NOT NULL,
     `SalaryPaid` DECIMAL(10, 2) NOT NULL,
+    `SalaryPaidDate` DATE NOT NULL,
     `SalaryDue` DECIMAL(10, 2) NOT NULL
 );
 
@@ -61,9 +62,9 @@ CREATE TABLE `Appointments` (
 
 CREATE TABLE `Sales` (
     `Id` INT PRIMARY KEY AUTO_INCREMENT,
-    `AppointmentId` INT NOT NULL,
+    `ClientId` INT NOT NULL,
     `Amount` DECIMAL(10, 2) NOT NULL,
-    FOREIGN KEY (`AppointmentId`) REFERENCES `Appointments`(`Id`)
+    FOREIGN KEY (`ClientId`) REFERENCES `Clients`(`Id`)
 );
 
 CREATE TABLE `Expenses` (
@@ -78,9 +79,7 @@ CREATE TABLE `Expenses` (
 
 CREATE TABLE `TotalExpenses` (
     `Id` INT PRIMARY KEY AUTO_INCREMENT,
-    `EmployeeId` INT NOT NULL,
-    `ExpenseId` INT NOT NULL,
-    `TotalAmount` DECIMAL(10, 2) NOT NULL,
-    FOREIGN KEY (`EmployeeId`) REFERENCES `Employee`(`Id`),
-    FOREIGN KEY (`ExpenseId`) REFERENCES `Expenses`(`Id`)
+    `EmployeeTotal` INT NOT NULL,
+    `ExpenseTotal` INT NOT NULL,
+    `TotalAmount` DECIMAL(10, 2) NOT NULL
 )
