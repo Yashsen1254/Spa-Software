@@ -9,7 +9,8 @@ CREATE TABLE `Services` (
     `Name` VARCHAR(100) NOT NULL,
     `Description` TEXT NOT NULL,
     `Price` INT NOT NULL,
-    `Duration` VARCHAR(50) NOT NULL
+    `Duration` VARCHAR(50) NOT NULL,
+    `NoOfAppointments` INT NOT NULL
 );
 
 CREATE TABLE `Clients` (
