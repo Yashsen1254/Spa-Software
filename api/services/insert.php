@@ -7,11 +7,12 @@
     $Description = $_POST['Description'];
     $Price = $_POST['Price'];
     $Duration = $_POST['Duration'];
+    $NoOfAppointments = $_POST['NoOfAppointments'];
 
-    $query = "INSERT INTO Services (Name,Description,Price,Duration) VALUES (?,?,?,?)";
-    $param = [$Name, $Description, $Price, $Duration];
+    $query = "INSERT INTO Services (Name,Description,Price,Duration,NoOfAppointments) VALUES (?,?,?,?,?)";
+    $param = [$Name, $Description, $Price, $Duration, $NoOfAppointments];
 
     execute($query, $param);
 
-    echo json_encode(["status" => "success", "message" => "Client Added Successfully"]);
+    echo json_encode(["status" => "success", "message" => "Service Added Successfully"]);
 ?>

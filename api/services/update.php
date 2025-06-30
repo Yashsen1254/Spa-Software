@@ -7,9 +7,10 @@
     $Description = $_POST['Description'];
     $Price = $_POST['Price'];
     $Duration = $_POST['Duration'];
+    $NoOfAppointments = $_POST['NoOfAppointments'];
 
-    $query = "UPDATE Services SET Name = ?, Description = ?, Price = ?, Duration = ? WHERE Id = ?";
-    $param = [$Name, $Description, $Price, $Duration, $Id];
+    $query = "UPDATE Services SET Name = ?, Description = ?, Price = ?, Duration = ?, NoOfAppointments = ? WHERE Id = ?";
+    $param = [$Name, $Description, $Price, $Duration, $NoOfAppointments, $Id];
 
     $result = execute($query, $param);
 
