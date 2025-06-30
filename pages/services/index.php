@@ -77,6 +77,7 @@ $services = select("SELECT * FROM Services");
                                                 <th>Description</th>
                                                 <th>Price</th>
                                                 <th>Duration</th>
+                                                <th>Number Of Appointments</th>
                                                 <th>Update</th>
                                                 <th>Delete</th>
                                             </tr>
@@ -89,6 +90,7 @@ $services = select("SELECT * FROM Services");
                                                     <td><?= $service["Description"] ?></td>
                                                     <td><?= $service["Price"] ?></td>
                                                     <td><?= $service["Duration"] ?></td>
+                                                    <td><?= $service["NoOfAppointments"] ?></td>
                                                     <form action="update.php" method="POST">
                                                         <td>
                                                             <input type="hidden" name="Id" id="Id" value="<?= $service['Id'] ?>">

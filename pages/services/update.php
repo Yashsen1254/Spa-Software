@@ -93,6 +93,12 @@ $services = selectOne("SELECT * FROM Services WHERE Id = $Id");
                                                         <input type="text" class="form-control" id="Duration" name="Duration" placeholder="Enter Duration Of The Service" value="<?= $services["Duration"] ?>">
                                                     </div>
                                                 </div>
+                                                <div class="col-lg-8">
+                                                    <div class="mb-3">
+                                                        <label for="formrow-inputCity" class="form-label">Number Of Appointments</label>
+                                                        <input type="text" class="form-control" id="NoOfAppointments" name="NoOfAppointments" placeholder="Enter Number Of Appointments" value="<?= $services["NoOfAppointments"] ?>">
+                                                    </div>
+                                                </div>
                                             </div>
                                             <div>
                                                 <button type="submit" class="btn btn-primary w-md" onclick="updateData()">Submit</button>
@@ -118,7 +124,7 @@ include pathOf("includes/scripts.php");
         var Description = $('#Description').val();
         var Price = $('#Price').val();
         var Duration = $('#Duration').val();
-        console.log(Id, Name, Description, Price, Duration);
+        var NoOfAppointments = $('#NoOfAppointments').val();
         
         $.ajax({
             url: '../../api/services/update.php',
@@ -128,7 +134,8 @@ include pathOf("includes/scripts.php");
                 Name: Name,
                 Description: Description,
                 Price: Price,
-                Duration: Duration
+                Duration: Duration,
+                NoOfAppointments: NoOfAppointments
             },
             success: function(response) {
                 alert("Service Updated Successfully");

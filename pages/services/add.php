@@ -89,6 +89,12 @@ include pathOf("includes/navbar.php");
                                                         <input type="text" class="form-control" id="Duration" name="Duration" placeholder="Enter Duration Of The Service">
                                                     </div>
                                                 </div>
+                                                <div class="col-lg-8">
+                                                    <div class="mb-3">
+                                                        <label for="formrow-inputCity" class="form-label">Number Of Appointments</label>
+                                                        <input type="number" class="form-control" id="NoOfAppointments" name="NoOfAppointments" placeholder="Enter Number Of Appointments">
+                                                    </div>
+                                                </div>
                                             </div>
                                             <div>
                                                 <button type="submit" class="btn btn-primary w-md" onclick="insertData()">Submit</button>
@@ -112,6 +118,7 @@ include pathOf("includes/scripts.php");
         var Description = $('#Description').val();
         var Price = $('#Price').val();
         var Duration = $('#Duration').val();
+        var NoOfAppointments = $('#NoOfAppointments').val();
 
         $.ajax({
             url: '../../api/services/insert.php',
@@ -120,7 +127,8 @@ include pathOf("includes/scripts.php");
                 Name: Name,
                 Description: Description,
                 Price: Price,
-                Duration: Duration
+                Duration: Duration,
+                NoOfAppointments: NoOfAppointments
             },
             success: function(response) {
                 alert("Service Added Successfully");
