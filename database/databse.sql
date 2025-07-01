@@ -40,6 +40,7 @@ CREATE TABLE `Employee` (
     `RelationMobile` VARCHAR(15) NOT NULL,
     `RelationAddress` VARCHAR(100) NOT NULL,
     `Relation` VARCHAR(100) NOT NULL,
+    `JoiningDate` DATE NOT NULL,
     `ImageFileName` VARCHAR(255) NOT NULL,
     `AddharCardImageFileName` VARCHAR(255) NOT NULL,
     `AddharCardNumber` VARCHAR(20) NOT NULL,
@@ -54,8 +55,8 @@ CREATE TABLE `Appointments` (
     `EmployeeId` INT NOT NULL,
     `RoomNo` INT NOT NULL,
     `AppointmentDate` DATETIME NOT NULL,
-    `AppointmentTime` TIME NOT NULL,
-    `Status` VARCHAR(100) NOT NULL,
+    `InTime` TIME NOT NULL,
+    `OutTime` TIME NOT NULL,
     `IsDelete` INT NOT NULL DEFAULT 1,
     FOREIGN KEY (`ClientId`) REFERENCES `Clients`(`Id`),
     FOREIGN KEY (`EmployeeId`) REFERENCES `Employee`(`Id`)
