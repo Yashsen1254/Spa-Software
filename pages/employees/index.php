@@ -99,6 +99,12 @@ $employees = select("SELECT * FROM Employee");
                                                     <td>
                                                         <button type="submit" class="btn btn-primary w-md" onclick="deleteData(<?= $employee['Id'] ?>)">DELETE</button>
                                                     </td>
+                                                    <form action="view.php" method="POST">
+                                                        <td>
+                                                            <input type="hidden" name="Id" id="Id" value="<?= $employee['Id'] ?>">
+                                                            <button type="submit" class="btn btn-primary w-md">VIEW</button>
+                                                        </td>
+                                                    </form>
                                                 </tr>
                                             <?php endforeach; ?>
                                             </tbody>

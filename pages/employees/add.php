@@ -59,6 +59,10 @@ include pathOf("includes/navbar.php");
                             <input type="number" class="form-control" name="AddharCardNumber">
                         </div>
                         <div class="col-md-6 mb-3">
+                            <label class="form-label">Joining Date</label>
+                            <input type="date" class="form-control" name="JoiningDate">
+                        </div>
+                        <div class="col-md-6 mb-3">
                             <label class="form-label">Salary Paid</label>
                             <input type="number" class="form-control" name="SalaryPaid">
                         </div>
