@@ -55,7 +55,13 @@
                                 </a>
                             </li>
                             <li>
-                                <a href="<?= urlOf("pages/clients/index.php") ?>" class="has-arrow waves-effect">
+                                <a href="<?= urlOf("pages/membership/index.php") ?>" class="has-arrow waves-effect">
+                                    <i class="bx bx-home-circle"></i>
+                                    <span key="t-dashboards">Membership</span>
+                                </a>
+                            </li>
+                            <li>
+                                <a href="<?= urlOf("pages/client/index.php") ?>" class="has-arrow waves-effect">
                                     <i class="bx bx-home-circle"></i>
                                     <span key="t-dashboards">Clients</span>
                                 </a>
@@ -67,15 +73,9 @@
                                 </a>
                             </li>
                             <li>
-                                <a href="<?= urlOf("pages/appointments/index.php") ?>" class="has-arrow waves-effect">
+                                <a href="<?= urlOf("pages/expenses/index.php") ?>" class="has-arrow waves-effect">
                                     <i class="bx bx-home-circle"></i>
-                                    <span key="t-dashboards">Appointment</span>
-                                </a>
-                            </li>
-                            <li>
-                                <a href="<?= urlOf("pages/products/index.php") ?>" class="has-arrow waves-effect">
-                                    <i class="bx bx-home-circle"></i>
-                                    <span key="t-dashboards">Products</span>
+                                    <span key="t-dashboards">Expenses</span>
                                 </a>
                             </li>
                         </ul>
