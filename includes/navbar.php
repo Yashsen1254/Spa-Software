@@ -3,7 +3,7 @@
 
     <!-- SOFTWARE NAME AT THE TOP -->
     <div style="padding: 15px; text-align: center; background-color: #1f2937; color: #fff; font-weight: bold; font-size: 18px;">
-        Your Software Name
+        Blissful Divine Spa
     </div>
 
     <!-- SCROLLABLE MENU -->
@@ -52,7 +52,8 @@
 
     <!-- FIXED CONTACT NUMBER -->
     <div style="flex-shrink: 0; background-color: #1f2937; color: #fff; text-align: center; padding: 10px;">
-        <small>Contact: <a href="tel:+919876543210" style="color: #fff; text-decoration: none;">+91-9876543210</a></small>
+        <h4>Aurom Services</h4>
+        <small>Contact: <a href="tel:+919876543210" style="color: #fff; text-decoration: none;">+91 96871 10727</a></small>
     </div>
 </div>
 <!-- Left Sidebar End -->
