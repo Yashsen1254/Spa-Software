@@ -37,13 +37,25 @@
                 <li>
                     <a href="<?= urlOf("pages/employees/index.php") ?>" class="has-arrow waves-effect">
                         <i class="bx bx-group"></i>
-                        <span key="t-dashboards">Employee</span>
+                        <span key="t-dashboards">Employee Report</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="<?= urlOf("pages/employeeMoney/index.php") ?>" class="has-arrow waves-effect">
+                        <i class="bx bx-money"></i>
+                        <span key="t-dashboards">Employee Money</span>
                     </a>
                 </li>
                 <li>
                     <a href="<?= urlOf("pages/expenses/index.php") ?>" class="has-arrow waves-effect">
                         <i class="bx bx-money"></i>
                         <span key="t-dashboards">Expenses</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="<?= urlOf("pages/history/index.php") ?>" class="has-arrow waves-effect">
+                        <i class="bx bx-money"></i>
+                        <span key="t-dashboards">History</span>
                     </a>
                 </li>
             </ul>
