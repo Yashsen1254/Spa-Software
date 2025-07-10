@@ -5,7 +5,13 @@ include pathOf("includes/header.php");
 include pathOf("includes/navbar.php");
 
 $index = 0;
-$clients = select("SELECT * FROM Clients");
+
+$clients = select("
+    SELECT Clients.*, Employee.Name AS EmployeeName
+    FROM Clients
+    INNER JOIN Employee ON Clients.EmployeeId = Employee.Id
+");
+
 
 ?>
     <body data-sidebar="dark">
@@ -93,12 +99,12 @@ $clients = select("SELECT * FROM Clients");
                                                     <td><?= $client["Name"] ?></td>
                                                     <td><?= $client["Mobile"] ?></td>
                                                     <td><?= $client["Therapy"] ?></td>
-                                                    <td><?= $client["TherapistName"] ?></td>
+                                                    <td><?= $client["EmployeeName"] ?></td>
                                                     <td><?= $client["Date"] ?></td>
                                                     <td><?= $client["InTime"] ?></td>
                                                     <td><?= $client["OutTime"] ?></td>
                                                     <td><?= $client["Price"] ?></td>
-                                                    <td><?= $client["Payment"] ?></td>
+                                                    <td><?= $client["PaymentMode"] ?></td>
                                                     <form action="update.php" method="POST">
                                                         <td>
                                                             <input type="hidden" name="Id" id="Id" value="<?= $client['Id'] ?>">

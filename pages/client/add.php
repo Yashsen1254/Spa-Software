@@ -4,6 +4,8 @@ require '../../includes/init.php';
 include pathOf("includes/header.php");
 include pathOf("includes/navbar.php");
 
+$employees = select("SELECT * FROM Employee");
+
 ?>
     <body data-sidebar="dark">
 <div id="layout-wrapper">
@@ -83,7 +85,12 @@ include pathOf("includes/navbar.php");
                                                 <div class="col-md-4">
                                                     <div class="mb-3">
                                                         <label for="formrow-password-input" class="form-label">Therapist Name</label>
-                                                        <input type="text" class="form-control" id="TherapistName" name="TherapistName" placeholder="Enter Therapist Name">
+                                                        <select name="EmployeeId" id="EmployeeId" class="form-select">
+                                                            <option value="">Select Therapist</option>
+                                                            <?php foreach ($employees as $employee): ?>
+                                                                <option value="<?= $employee['Id'] ?>"><?= $employee['Name'] ?></option>
+                                                            <?php endforeach; ?>
+                                                        </select>
                                                     </div>
                                                 </div>
                                             </div>
@@ -108,16 +115,35 @@ include pathOf("includes/navbar.php");
                                                 </div>
                                             </div>
                                             <div class="row">
-                                                <div class="col-lg-6">
+                                                <div class="col-lg-4">
+                                                    <div class="mb-3">
+                                                        <label for="formrow-inputCity" class="form-label">Massage</label>
+                                                        <select name="Massage" id="Massage" class="form-select">
+                                                            <option value="">Select Massage</option>
+                                                            <option value="Swedish">Swedish</option>
+                                                            <option value="Deep Tissue">Deep Tissue</option>
+                                                            <option value="Aromatherapy">Aromatherapy</option>
+                                                            <option value="Hot Stone">Hot Stone</option>
+                                                            <option value="Thai">Thai</option>
+                                                        </select>
+                                                    </div>
+                                                </div>
+                                                <div class="col-lg-4">
                                                     <div class="mb-3">
                                                         <label for="formrow-inputCity" class="form-label">Price</label>
                                                         <input type="number" class="form-control" id="Price" name="Price" placeholder="Enter Price">
                                                     </div>
                                                 </div>
-                                                <div class="col-lg-6">
+                                                <div class="col-lg-4">
                                                     <div class="mb-3">
-                                                        <label for="formrow-inputCity" class="form-label">Payment</label>
-                                                        <input type="number" class="form-control" id="Payment" name="Payment" placeholder="Enter Payment">
+                                                        <label for="formrow-inputCity" class="form-label">Payment Mode</label>
+                                                        <select name="PaymentMode" id="PaymentMode" class="form-select">
+                                                            <option value="">Select Payment Mode</option>
+                                                            <option value="Cash">Cash</option>
+                                                            <option value="Credit Card">Credit Card</option>
+                                                            <option value="Debit Card">Debit Card</option>
+                                                            <option value="UPI">UPI</option>
+                                                        </select>
                                                     </div>
                                                 </div>
                                             </div>
@@ -142,12 +168,13 @@ include pathOf("includes/scripts.php");
         var Name = $('#Name').val();
         var Mobile = $('#Mobile').val();
         var Therapy = $('#Therapy').val();
-        var TherapistName = $('#TherapistName').val();
+        var EmployeeId = $('#EmployeeId').val();
         var Date = $('#Date').val();
         var InTime = $('#InTime').val();
         var OutTime = $('#OutTime').val();
         var Price = $('#Price').val();
-        var Payment = $('#Payment').val();
+        var Massage = $('#Massage').val();
+        var Payment = $('#PaymentMode').val();
 
         $.ajax({
             url: '../../api/client/insert.php',
@@ -156,12 +183,13 @@ include pathOf("includes/scripts.php");
                 Name: Name,
                 Mobile: Mobile,
                 Therapy: Therapy,
-                TherapistName: TherapistName,
+                EmployeeId: EmployeeId,
                 Date: Date,
                 InTime: InTime,
                 OutTime: OutTime,
                 Price: Price,
-                Payment: Payment
+                Payment: Payment,
+                Massage: Massage
             },
             success: function(response) {
                 alert("Client Added Successfully");
