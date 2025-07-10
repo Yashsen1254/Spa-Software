@@ -15,10 +15,11 @@
     $StartDate = $_POST['StartDate'];
     $EndDate = $_POST['EndDate'];
     $IsDelete = $_POST['IsDelete'];
+    $PaymentMode = $_POST['PaymentMode'] ?? ''; // Optional field, default to empty string
 
 
-    $query = "INSERT INTO Membership (Name,Mobile,Address,Age,Email,AmountPaid,AmountDue,TotalAmount,ServiceId,StartDate,EndDate,IsDelete) VALUES (?,?,?,?,?,?,?,?,?,?,?,?)";
-    $param = [$Name, $Mobile, $Address, $Age, $Email, $AmountPaid, $AmountDue, $TotalAmount, $ServiceId, $StartDate, $EndDate, $IsDelete];
+    $query = "INSERT INTO Membership (Name,Mobile,Address,Age,Email,AmountPaid,AmountDue,TotalAmount,ServiceId,StartDate,EndDate,IsDelete,PaymentMode) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?)";
+    $param = [$Name, $Mobile, $Address, $Age, $Email, $AmountPaid, $AmountDue, $TotalAmount, $ServiceId, $StartDate, $EndDate, $IsDelete, $PaymentMode];
 
     execute($query, $param);
 

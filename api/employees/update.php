@@ -20,8 +20,7 @@ $RelationName = $_POST['RelationName'] ?? '';
 $RelationMobile = $_POST['RelationMobile'] ?? '';
 $RelationAddress = $_POST['RelationAddress'] ?? '';
 $AddharCardNumber = $_POST['AddharCardNumber'] ?? '';
-$SalaryPaid = $_POST['SalaryPaid'] ?? '';
-$SalaryDue = $_POST['SalaryDue'] ?? '';
+$TotalSalary = $_POST['TotalSalary'] ?? '';
 $JoiningDate = $_POST['JoiningDate'] ?? '';
 
 $uploadPath = pathOf("assets/uploads/");
@@ -52,13 +51,12 @@ $query = "UPDATE Employee SET
     RelationMobile = ?, 
     RelationAddress = ?, 
     AddharCardNumber = ?, 
-    SalaryPaid = ?, 
-    SalaryDue = ?, 
+    TotalSalary = ?, 
     JoiningDate = ?";
 
 $params = [
     $Name, $Mobile, $Address, $Age, $Email, $Relation, $RelationName,
-    $RelationMobile, $RelationAddress, $AddharCardNumber, $SalaryPaid, $SalaryDue, $JoiningDate
+    $RelationMobile, $RelationAddress, $AddharCardNumber, $TotalSalary, $JoiningDate
 ];
 
 // Add uploaded filenames if present

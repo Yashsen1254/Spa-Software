@@ -10,9 +10,10 @@
     $Price = $_POST['Price'];
     $Quantity = $_POST['Quantity'];
     $TotalAmount = $_POST['TotalAmount'];
+    $PaymentMode = $_POST['PaymentMode'] ?? ''; // Optional field, default to empty string
 
-    $query = "INSERT INTO Expenses (Name,Description,Date,Volume,Price,Quantity,TotalAmount) VALUES (?,?,?,?,?,?,?)";
-    $param = [$Name, $Description, $Date, $Volume, $Price, $Quantity, $TotalAmount];
+    $query = "INSERT INTO Expenses (Name,Description,Date,Volume,Price,Quantity,TotalAmount,PaymentMode) VALUES (?,?,?,?,?,?,?,?)";
+    $param = [$Name, $Description, $Date, $Volume, $Price, $Quantity, $TotalAmount, $PaymentMode];
 
     execute($query, $param);
 
