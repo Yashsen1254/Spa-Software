@@ -143,6 +143,19 @@ $services = select("SELECT * FROM Services")
                                                     <input type="hidden" id="IsDelete" name="IsDelete" value="1">
                                                 </div>
                                             </div>
+                                            <div class="col-md-12">
+                                                <div class="mb-3">
+                                                    <label for="formrow-password-input" class="form-label">Payment Mode</label>
+                                                    <select name="PaymentMode" id="PaymentMode" class="form-select">
+                                                        <option value="Cash">Cash</option>
+                                                        <option value="Card">Card</option>
+                                                        <option value="UPI">UPI</option>
+                                                        <option value="Net Banking">Net Banking</option>
+                                                        <option value="Cheque">Cheque</option>
+                                                        <option value="Other">Other</option>
+                                                    </select>
+                                                </div>
+                                            </div>
                                         </div>
                                         <div>
                                             <button type="submit" class="btn btn-primary w-md" onclick="insertData()">Submit</button>
@@ -176,6 +189,7 @@ $services = select("SELECT * FROM Services")
                 var StartDate = $('#StartDate').val();
                 var EndDate = $('#EndDate').val();
                 var IsDelete = $('#IsDelete').val();
+                var PaymentMode = $('#PaymentMode').val();
 
                 $.ajax({
                     url: '../../api/membership/insert.php',
@@ -192,7 +206,8 @@ $services = select("SELECT * FROM Services")
                         ServiceId: ServiceId,
                         StartDate: StartDate,
                         EndDate: EndDate,
-                        IsDelete: IsDelete
+                        IsDelete: IsDelete,
+                        PaymentMode: PaymentMode
                     },
                     success: function(response) {
                         alert("Membership Added Successfully");

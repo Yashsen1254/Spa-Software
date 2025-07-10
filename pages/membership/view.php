@@ -34,6 +34,7 @@ if (isset($_POST['save_appointments'])) {
     $employeeIds = $_POST['employee_id'] ?? [];
     $roomNos = $_POST['room_no'] ?? [];
     $appointmentDates = $_POST['appointment_date'] ?? [];
+    $massage = $_POST['massage'] ?? [];
     $inTimes = $_POST['appointment_time'] ?? [];
     $outTimes = $_POST['out_time'] ?? [];
 
@@ -47,9 +48,9 @@ if (isset($_POST['save_appointments'])) {
         ) {
             $datetime = $appointmentDates[$i] . ' ' . $inTimes[$i];
             execute(
-                "INSERT INTO Appointments (MemberId, EmployeeId, RoomNo, AppointmentDate, InTime, OutTime, IsDelete) 
-                 VALUES (?, ?, ?, ?, ?, ?, 1)", 
-                [$Id, $employeeIds[$i], $roomNos[$i], $datetime, $inTimes[$i], $outTimes[$i]]
+                "INSERT INTO Appointments (MemberId, EmployeeId, RoomNo, Massage, AppointmentDate, InTime, OutTime, IsDelete) 
+                 VALUES (?, ?, ?, ?, ?, ?, ?, 1)", 
+                [$Id, $employeeIds[$i], $roomNos[$i], $massage[$i], $datetime, $inTimes[$i], $outTimes[$i]]
             );
         }
     }
@@ -157,6 +158,7 @@ $appointments = select(
                                             <tr>
                                                 <th>Employee Name</th>
                                                 <th>Room No</th>
+                                                <th>Massage</th>
                                                 <th>Date</th>
                                                 <th>In Time</th>
                                                 <th>Out Time</th>
@@ -167,6 +169,7 @@ $appointments = select(
                                                 <tr>
                                                     <td><?= $appointment['EmployeeName'] ?></td>
                                                     <td><?= $appointment['RoomNo'] ?></td>
+                                                    <td><?= $appointment['Massage'] ?></td>
                                                     <td><?= date('Y-m-d', strtotime($appointment['AppointmentDate'])) ?></td>
                                                     <td><?= $appointment['InTime'] ?></td>
                                                     <td><?= $appointment['OutTime'] ?></td>
@@ -213,6 +216,16 @@ $appointments = select(
                 </select>
             </td>
             <td><input type="number" name="room_no[]" class="form-control" required></td>
+            <td>
+                <select name="massage[]" class="form-control" required>
+                    <option value="">Select Massage</option>
+                    <option value="Swedish">Swedish</option>
+                    <option value="Deep Tissue">Deep Tissue</option>
+                    <option value="Aromatherapy">Aromatherapy</option>
+                    <option value="Hot Stone">Hot Stone</option>
+                    <option value="Thai">Thai</option>
+                </select>
+            </td>
             <td><input type="date" name="appointment_date[]" class="form-control" required></td>
             <td><input type="time" name="appointment_time[]" class="form-control" required></td>
             <td><input type="time" name="out_time[]" class="form-control" required></td>
