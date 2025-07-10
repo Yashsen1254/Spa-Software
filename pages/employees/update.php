@@ -67,12 +67,8 @@ $employee = selectOne("SELECT * FROM Employee WHERE Id = $Id");
                             <input type="date" class="form-control" name="JoiningDate" value="<?= $employee['JoiningDate'] ?>">
                         </div>
                         <div class="col-md-6 mb-3">
-                            <label class="form-label">Salary Paid</label>
-                            <input type="number" class="form-control" name="SalaryPaid" value="<?= $employee['SalaryPaid'] ?>">
-                        </div>
-                        <div class="col-md-6 mb-3">
-                            <label class="form-label">Salary Due</label>
-                            <input type="number" class="form-control" name="SalaryDue"  value="<?= $employee['SalaryDue'] ?>">
+                            <label class="form-label">Total Salary</label>
+                            <input type="number" class="form-control" name="TotalSalary" value="<?= $employee['TotalSalary'] ?>">
                         </div>
                         <div class="col-md-6 mb-3">
                             <label class="form-label">Employee Image</label>

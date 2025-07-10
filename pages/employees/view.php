@@ -10,6 +10,9 @@ if (!$employee) {
     die("Employee not found.");
 }
 
+// Add TotalSalary to employee array manually (if it's not already in DB)
+$employee['Salary'] = ($employee['SalaryPaid'] ?? 0) + ($employee['SalaryDue'] ?? 0);
+
 class PDF extends FPDF {
     function Header() {
         $this->SetFont('Arial', 'B', 14);
@@ -26,7 +29,8 @@ class PDF extends FPDF {
         $lineHeight = 7;
 
         foreach ($employee as $key => $value) {
-            if (in_array($key, ['ImageFileName', 'AddharCardImageFileName'])) continue;
+            // Skip image fields and salary fields
+            if (in_array($key, ['ImageFileName', 'AddharCardImageFileName', 'SalaryPaidDate', 'SalaryDue', 'SalaryPaid'])) continue;
 
             $label = ucwords(str_replace(['Id', 'FileName'], ['ID', ''], preg_replace('/(?<!^)[A-Z]/', ' $0', $key)));
 
