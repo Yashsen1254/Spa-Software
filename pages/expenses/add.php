@@ -96,6 +96,17 @@ include pathOf("includes/navbar.php");
                                         <input type="number" class="form-control" id="TotalAmount" name="TotalAmount" placeholder="Total Amount" readonly>
                                     </div>
 
+                                    <div class="mb-3">
+                                        <label class="form-label">Payment Mode</label>
+                                        <select name="PaymentMode" id="PaymentMode" class="form-select">
+                                            <option value="">Select Payment Mode</option>
+                                            <option value="Cash">Cash</option>
+                                            <option value="Credit Card">Credit Card</option>
+                                            <option value="Debit Card">Debit Card</option>
+                                            <option value="UPI">UPI</option>
+                                        </select>
+                                    </div>
+
                                     <div>
                                         <button type="submit" class="btn btn-primary w-md" onclick="insertData(); return false;">Submit</button>
                                     </div>
@@ -130,6 +141,7 @@ include pathOf("includes/navbar.php");
         const Price = $('#Price').val();
         const Quantity = $('#Quantity').val();
         const TotalAmount = $('#TotalAmount').val();
+        var PaymentMode = $('#PaymentMode').val();
 
         $.ajax({
             url: '../../api/expenses/insert.php',
@@ -141,7 +153,8 @@ include pathOf("includes/navbar.php");
                 Volume: Volume,
                 Price: Price,
                 Quantity: Quantity,
-                TotalAmount: TotalAmount
+                TotalAmount: TotalAmount,
+                PaymentMode: PaymentMode
             },
             success: function (response) {
                 alert("Expenses Added Successfully");
