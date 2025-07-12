@@ -8,16 +8,14 @@
     $Address = $_POST['Address'];
     $Age = $_POST['Age'];
     $Email = $_POST['Email'];
-    $AmountPaid = $_POST['AmountPaid'];
-    $AmountDue = $_POST['AmountDue'];
     $TotalAmount = $_POST['TotalAmount'];
     $ServiceId = $_POST['ServiceId'];
     $StartDate = $_POST['StartDate'];
     $EndDate = $_POST['EndDate'];
-    $IsDelete = $_POST['IsDelete'];
+    $PaymentMode = $_POST['PaymentMode'];
 
-    $query = "UPDATE Membership SET Name = ?, Mobile = ?, Address = ?, Age = ?, Email = ?, AmountPaid = ?, AmountDue = ?, TotalAmount = ?, ServiceId = ?, StartDate = ?, EndDate = ?, IsDelete = ? WHERE Id = ?";
-    $param = [$Name, $Mobile, $Address, $Age, $Email, $AmountPaid, $AmountDue, $TotalAmount, $ServiceId, $StartDate, $EndDate, $IsDelete, $Id];
+    $query = "UPDATE Membership SET Name = ?, Mobile = ?, Address = ?, Age = ?, Email = ?, TotalAmount = ?, ServiceId = ?, StartDate = ?, EndDate = ?, PaymentMode = ? WHERE Id = ?";
+    $param = [$Name, $Mobile, $Address, $Age, $Email, $TotalAmount, $ServiceId, $StartDate, $EndDate, $PaymentMode, $Id];
 
     $result = execute($query, $param);
 

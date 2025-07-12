@@ -8,8 +8,6 @@
     $Address = $_POST['Address'];
     $Age = $_POST['Age'];
     $Email = $_POST['Email'];
-    $AmountPaid = $_POST['AmountPaid'];
-    $AmountDue = $_POST['AmountDue'];
     $TotalAmount = $_POST['TotalAmount'];
     $ServiceId = $_POST['ServiceId'];
     $StartDate = $_POST['StartDate'];
@@ -18,8 +16,8 @@
     $PaymentMode = $_POST['PaymentMode'] ?? ''; // Optional field, default to empty string
 
 
-    $query = "INSERT INTO Membership (Name,Mobile,Address,Age,Email,AmountPaid,AmountDue,TotalAmount,ServiceId,StartDate,EndDate,IsDelete,PaymentMode) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?)";
-    $param = [$Name, $Mobile, $Address, $Age, $Email, $AmountPaid, $AmountDue, $TotalAmount, $ServiceId, $StartDate, $EndDate, $IsDelete, $PaymentMode];
+    $query = "INSERT INTO Membership (Name,Mobile,Address,Age,Email,TotalAmount,ServiceId,StartDate,EndDate,IsDelete,PaymentMode) VALUES (?,?,?,?,?,?,?,?,?,?,?)";
+    $param = [$Name, $Mobile, $Address, $Age, $Email, $TotalAmount, $ServiceId, $StartDate, $EndDate, $IsDelete, $PaymentMode];
 
     execute($query, $param);
 
