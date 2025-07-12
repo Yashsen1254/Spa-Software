@@ -17,73 +17,76 @@ $pdf->Ln(10);
 $pdf->SetFont('Arial', 'B', 14);
 $pdf->Cell(0, 10, 'Employee Salaries', 0, 1);
 $pdf->SetFont('Arial', 'B', 12);
-$pdf->Cell(60, 10, 'Employee Name', 1);
-$pdf->Cell(30, 10, 'Salary Paid', 1);
-$pdf->Cell(40, 10, 'Payment Date', 1);
-$pdf->Cell(60, 10, 'Mobile', 1);
+$pdf->Cell(100, 10, 'Employee Name', 1);
+$pdf->Cell(50, 10, 'Given Salary', 1);
 $pdf->Ln();
 
 $pdf->SetFont('Arial', '', 12);
-$salaryRows = select("SELECT Name, SalaryPaid, SalaryPaidDate, Mobile 
-                     FROM Employee 
-                     WHERE MONTH(SalaryPaidDate) = ? AND YEAR(SalaryPaidDate) = ?", 
-                     [$month, $year]);
+$salaryRows = select("
+    SELECT Name, GivenSalary
+    FROM Employee
+    WHERE GivenSalary IS NOT NULL AND GivenSalary > 0
+");
 
 $totalSalaries = 0;
-foreach ($salaryRows as $row) {
-    $pdf->Cell(60, 10, $row['Name'], 1);
-    $pdf->Cell(30, 10, $row['SalaryPaid'], 1);
-    $pdf->Cell(40, 10, $row['SalaryPaidDate'], 1);
-    $pdf->Cell(60, 10, $row['Mobile'], 1);
-    $pdf->Ln();
-    $totalSalaries += $row['SalaryPaid'];
+if (!empty($salaryRows)) {
+    foreach ($salaryRows as $row) {
+        $pdf->Cell(100, 10, $row['Name'], 1);
+        $pdf->Cell(50, 10, 'Rs ' . number_format($row['GivenSalary'], 2), 1);
+        $pdf->Ln();
+        $totalSalaries += $row['GivenSalary'];
+    }
+} else {
+    $pdf->Cell(150, 10, 'No salary data available for this month.', 1, 1, 'C');
 }
+
 $pdf->SetFont('Arial', 'B', 12);
-$pdf->Cell(60, 10, 'Total Salaries', 1);
-$pdf->Cell(30, 10, 'Rs ' . number_format($totalSalaries, 2), 1);
-$pdf->Cell(100, 10, '', 1);
+$pdf->Cell(100, 10, 'Total Salaries', 1);
+$pdf->Cell(50, 10, 'Rs ' . number_format($totalSalaries, 2), 1);
 $pdf->Ln(15);
 
-// ===== Expenses =====
+// ===== Other Expenses =====
 $pdf->SetFont('Arial', 'B', 14);
-$pdf->Cell(0, 10, 'Expenses', 0, 1);
+$pdf->Cell(0, 10, 'Other Expenses', 0, 1);
 $pdf->SetFont('Arial', 'B', 12);
-$pdf->Cell(40, 10, 'Name', 1);
-$pdf->Cell(50, 10, 'Description', 1);
+$pdf->Cell(60, 10, 'Name', 1);
+$pdf->Cell(60, 10, 'Description', 1);
 $pdf->Cell(30, 10, 'Date', 1);
-$pdf->Cell(30, 10, 'Quantity', 1);
-$pdf->Cell(40, 10, 'Total Amount', 1);
+$pdf->Cell(40, 10, 'Amount', 1);
 $pdf->Ln();
 
 $pdf->SetFont('Arial', '', 12);
-$expenseRows = select("SELECT Name, Description, Date, Quantity, TotalAmount 
-                      FROM Expenses 
-                      WHERE MONTH(Date) = ? AND YEAR(Date) = ?", 
-                      [$month, $year]);
+$expenseRows = select("
+    SELECT Name, Description, Date, TotalAmount
+    FROM Expenses
+    WHERE MONTH(Date) = ? AND YEAR(Date) = ?",
+    [$month, $year]
+);
 
 $totalExpenses = 0;
-foreach ($expenseRows as $row) {
-    $pdf->Cell(40, 10, $row['Name'], 1);
-    $pdf->Cell(50, 10, $row['Description'], 1);
-    $pdf->Cell(30, 10, $row['Date'], 1);
-    $pdf->Cell(30, 10, $row['Quantity'], 1);
-    $pdf->Cell(40, 10, $row['TotalAmount'], 1);
-    $pdf->Ln();
-    $totalExpenses += $row['TotalAmount'];
+if (!empty($expenseRows)) {
+    foreach ($expenseRows as $row) {
+        $pdf->Cell(60, 10, $row['Name'], 1);
+        $pdf->Cell(60, 10, $row['Description'], 1);
+        $pdf->Cell(30, 10, $row['Date'], 1);
+        $pdf->Cell(40, 10, 'Rs ' . number_format($row['TotalAmount'], 2), 1);
+        $pdf->Ln();
+        $totalExpenses += $row['TotalAmount'];
+    }
+} else {
+    $pdf->Cell(190, 10, 'No expense data available for this month.', 1, 1, 'C');
 }
+
 $pdf->SetFont('Arial', 'B', 12);
-$pdf->Cell(40, 10, 'Total Expenses', 1);
-$pdf->Cell(80, 10, '', 1);
-$pdf->Cell(30, 10, '', 1);
+$pdf->Cell(150, 10, 'Total Other Expenses', 1);
 $pdf->Cell(40, 10, 'Rs ' . number_format($totalExpenses, 2), 1);
 $pdf->Ln(15);
 
 // ===== Grand Total =====
 $grandTotal = $totalSalaries + $totalExpenses;
 $pdf->SetFont('Arial', 'B', 14);
-$pdf->Cell(50, 10, 'Grand Total', 1);
+$pdf->Cell(150, 10, 'Grand Total Expenses', 1);
 $pdf->Cell(40, 10, 'Rs ' . number_format($grandTotal, 2), 1);
-$pdf->Cell(100, 10, '', 1);
 
 $pdf->Output();
 ?>

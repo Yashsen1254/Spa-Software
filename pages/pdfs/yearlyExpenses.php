@@ -15,74 +15,83 @@ $pdf->Ln(10);
 // ===== Employee Salaries =====
 $pdf->SetFont('Arial', 'B', 14);
 $pdf->Cell(0, 10, 'Employee Salaries', 0, 1);
-$pdf->SetFont('Arial', 'B', 12);
-$pdf->Cell(60, 10, 'Employee Name', 1);
-$pdf->Cell(30, 10, 'Salary Paid', 1);
+$pdf->SetFont('Arial', 'B', 11);
+$pdf->Cell(50, 10, 'Employee Name', 1);
+$pdf->Cell(35, 10, 'Given Salary', 1);
 $pdf->Cell(40, 10, 'Payment Date', 1);
-$pdf->Cell(60, 10, 'Mobile', 1);
+$pdf->Cell(50, 10, 'Mobile', 1);
 $pdf->Ln();
 
-$pdf->SetFont('Arial', '', 12);
-$salaryRows = select("SELECT Name, SalaryPaid, SalaryPaidDate, Mobile 
-                     FROM Employee 
-                     WHERE YEAR(SalaryPaidDate) = ?", 
-                     [$year]);
+$pdf->SetFont('Arial', '', 10);
+$salaryRows = select("
+    SELECT Name, GivenSalary, SalaryPaidDate, Mobile
+    FROM Employee
+    WHERE YEAR(SalaryPaidDate) = ?
+", [$year]);
 
 $totalSalaries = 0;
-foreach ($salaryRows as $row) {
-    $pdf->Cell(60, 10, $row['Name'], 1);
-    $pdf->Cell(30, 10, $row['SalaryPaid'], 1);
-    $pdf->Cell(40, 10, $row['SalaryPaidDate'], 1);
-    $pdf->Cell(60, 10, $row['Mobile'], 1);
-    $pdf->Ln();
-    $totalSalaries += $row['SalaryPaid'];
+if (!empty($salaryRows)) {
+    foreach ($salaryRows as $row) {
+        $pdf->Cell(50, 10, $row['Name'], 1);
+        $pdf->Cell(35, 10, 'Rs ' . number_format($row['GivenSalary'], 2), 1);
+        $pdf->Cell(40, 10, $row['SalaryPaidDate'] ?? '-', 1);
+        $pdf->Cell(50, 10, $row['Mobile'] ?? '-', 1);
+        $pdf->Ln();
+        $totalSalaries += $row['GivenSalary'];
+    }
+} else {
+    $pdf->Cell(175, 10, 'No salary payments for this year.', 1, 1, 'C');
 }
-$pdf->SetFont('Arial', 'B', 12);
-$pdf->Cell(60, 10, 'Total Salaries', 1);
-$pdf->Cell(30, 10, 'Rs ' . number_format($totalSalaries, 2), 1);
-$pdf->Cell(100, 10, '', 1);
-$pdf->Ln(15);
 
-// ===== Expenses =====
+$pdf->SetFont('Arial', 'B', 11);
+$pdf->Cell(50, 10, 'Total Salaries', 1);
+$pdf->Cell(35, 10, 'Rs ' . number_format($totalSalaries, 2), 1);
+$pdf->Cell(90, 10, '', 1);
+$pdf->Ln(12);
+
+// ===== Other Expenses =====
 $pdf->SetFont('Arial', 'B', 14);
-$pdf->Cell(0, 10, 'Expenses', 0, 1);
-$pdf->SetFont('Arial', 'B', 12);
+$pdf->Cell(0, 10, 'Other Expenses', 0, 1);
+$pdf->SetFont('Arial', 'B', 11);
 $pdf->Cell(40, 10, 'Name', 1);
 $pdf->Cell(50, 10, 'Description', 1);
 $pdf->Cell(30, 10, 'Date', 1);
-$pdf->Cell(30, 10, 'Quantity', 1);
-$pdf->Cell(40, 10, 'Total Amount', 1);
+$pdf->Cell(25, 10, 'Qty', 1);
+$pdf->Cell(35, 10, 'Total Amount', 1);
 $pdf->Ln();
 
-$pdf->SetFont('Arial', '', 12);
-$expenseRows = select("SELECT Name, Description, Date, Quantity, TotalAmount 
-                      FROM Expenses 
-                      WHERE YEAR(Date) = ?", 
-                      [$year]);
+$pdf->SetFont('Arial', '', 10);
+$expenseRows = select("
+    SELECT Name, Description, Date, Quantity, TotalAmount
+    FROM Expenses
+    WHERE YEAR(Date) = ?
+", [$year]);
 
 $totalExpenses = 0;
-foreach ($expenseRows as $row) {
-    $pdf->Cell(40, 10, $row['Name'], 1);
-    $pdf->Cell(50, 10, $row['Description'], 1);
-    $pdf->Cell(30, 10, $row['Date'], 1);
-    $pdf->Cell(30, 10, $row['Quantity'], 1);
-    $pdf->Cell(40, 10, $row['TotalAmount'], 1);
-    $pdf->Ln();
-    $totalExpenses += $row['TotalAmount'];
+if (!empty($expenseRows)) {
+    foreach ($expenseRows as $row) {
+        $pdf->Cell(40, 10, $row['Name'], 1);
+        $pdf->Cell(50, 10, $row['Description'], 1);
+        $pdf->Cell(30, 10, $row['Date'] ?? '-', 1);
+        $pdf->Cell(25, 10, $row['Quantity'] ?? '-', 1);
+        $pdf->Cell(35, 10, 'Rs ' . number_format($row['TotalAmount'], 2), 1);
+        $pdf->Ln();
+        $totalExpenses += $row['TotalAmount'];
+    }
+} else {
+    $pdf->Cell(180, 10, 'No expense records for this year.', 1, 1, 'C');
 }
-$pdf->SetFont('Arial', 'B', 12);
-$pdf->Cell(40, 10, 'Total Expenses', 1);
-$pdf->Cell(80, 10, '', 1);
-$pdf->Cell(30, 10, '', 1);
-$pdf->Cell(40, 10, 'Rs ' . number_format($totalExpenses, 2), 1);
-$pdf->Ln(15);
+
+$pdf->SetFont('Arial', 'B', 11);
+$pdf->Cell(145, 10, 'Total Other Expenses', 1);
+$pdf->Cell(35, 10, 'Rs ' . number_format($totalExpenses, 2), 1);
+$pdf->Ln(12);
 
 // ===== Grand Total =====
 $grandTotal = $totalSalaries + $totalExpenses;
 $pdf->SetFont('Arial', 'B', 14);
-$pdf->Cell(50, 10, 'Grand Total', 1);
-$pdf->Cell(40, 10, 'Rs ' . number_format($grandTotal, 2), 1);
-$pdf->Cell(100, 10, '', 1);
+$pdf->Cell(70, 10, 'Grand Total Expenses', 1);
+$pdf->Cell(110, 10, 'Rs ' . number_format($grandTotal, 2), 1);
 
 $pdf->Output();
 ?>

@@ -23,15 +23,18 @@ $pdf->Cell(60, 10, 'Mobile', 1);
 $pdf->Ln();
 
 $pdf->SetFont('Arial', '', 12);
-$salaryRows = select("SELECT Name, SalaryPaid, SalaryPaidDate, Mobile FROM Employee WHERE SalaryPaidDate = ?", [$date]);
+$salaryRows = select("SELECT Name, GivenSalary, SalaryPaidDate, Mobile 
+                     FROM Employee 
+                     WHERE SalaryPaidDate = ?", 
+                     [$date]);
 $totalSalaries = 0;
 foreach ($salaryRows as $row) {
     $pdf->Cell(60, 10, $row['Name'], 1);
-    $pdf->Cell(30, 10, $row['SalaryPaid'], 1);
+    $pdf->Cell(30, 10, $row['GivenSalary'], 1);
     $pdf->Cell(40, 10, $row['SalaryPaidDate'], 1);
     $pdf->Cell(60, 10, $row['Mobile'], 1);
     $pdf->Ln();
-    $totalSalaries += $row['SalaryPaid'];
+    $totalSalaries += $row['GivenSalary'];
 }
 $pdf->SetFont('Arial', 'B', 12);
 $pdf->Cell(60, 10, 'Total Salaries', 1);
@@ -51,7 +54,10 @@ $pdf->Cell(40, 10, 'Total Amount', 1);
 $pdf->Ln();
 
 $pdf->SetFont('Arial', '', 12);
-$expenseRows = select("SELECT Name, Description, Date, Quantity, TotalAmount FROM Expenses WHERE Date = ?", [$date]);
+$expenseRows = select("SELECT Name, Description, Date, Quantity, TotalAmount 
+                      FROM Expenses 
+                      WHERE Date = ?", 
+                      [$date]);
 $totalExpenses = 0;
 foreach ($expenseRows as $row) {
     $pdf->Cell(40, 10, $row['Name'], 1);
@@ -82,17 +88,23 @@ $pdf->Ln();
 $pdf->SetFont('Arial', '', 12);
 $totalSales = 0;
 
-$membershipSales = select("SELECT Name, AmountPaid, StartDate FROM Membership WHERE StartDate = ? AND IsDelete = 1", [$date]);
+$membershipSales = select("SELECT Name, TotalAmount, StartDate 
+                           FROM Membership 
+                           WHERE StartDate = ? AND IsDelete = 1", 
+                           [$date]);
 foreach ($membershipSales as $row) {
     $pdf->Cell(60, 10, $row['Name'], 1);
-    $pdf->Cell(40, 10, $row['AmountPaid'], 1);
+    $pdf->Cell(40, 10, $row['TotalAmount'], 1);
     $pdf->Cell(50, 10, $row['StartDate'], 1);
     $pdf->Cell(40, 10, 'Membership', 1);
     $pdf->Ln();
-    $totalSales += $row['AmountPaid'];
+    $totalSales += $row['TotalAmount'];
 }
 
-$clientSales = select("SELECT Name, Price, Date FROM Clients WHERE Date = ?", [$date]);
+$clientSales = select("SELECT Name, Price, Date 
+                      FROM Clients 
+                      WHERE Date = ?", 
+                      [$date]);
 foreach ($clientSales as $row) {
     $pdf->Cell(60, 10, $row['Name'], 1);
     $pdf->Cell(40, 10, $row['Price'], 1);
@@ -122,3 +134,4 @@ $pdf->Cell(90, 10, '', 1);
 $pdf->SetTextColor(0, 0, 0);
 
 $pdf->Output();
+?>

@@ -23,7 +23,7 @@ $pdf->Cell(60, 10, 'Mobile', 1);
 $pdf->Ln();
 
 $pdf->SetFont('Arial', '', 12);
-$salaryRows = select("SELECT Name, SalaryPaid, SalaryPaidDate, Mobile 
+$salaryRows = select("SELECT Name, GivenSalary, SalaryPaidDate, Mobile 
                      FROM Employee 
                      WHERE SalaryPaidDate = ?", 
                      [$date]);
@@ -31,11 +31,11 @@ $salaryRows = select("SELECT Name, SalaryPaid, SalaryPaidDate, Mobile
 $totalSalaries = 0;
 foreach ($salaryRows as $row) {
     $pdf->Cell(60, 10, $row['Name'], 1);
-    $pdf->Cell(30, 10, $row['SalaryPaid'], 1);
+    $pdf->Cell(30, 10, $row['GivenSalary'], 1);
     $pdf->Cell(40, 10, $row['SalaryPaidDate'], 1);
     $pdf->Cell(60, 10, $row['Mobile'], 1);
     $pdf->Ln();
-    $totalSalaries += $row['SalaryPaid'];
+    $totalSalaries += $row['GivenSalary'];
 }
 $pdf->SetFont('Arial', 'B', 12);
 $pdf->Cell(60, 10, 'Total Salaries', 1);
