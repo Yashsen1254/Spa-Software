@@ -3,30 +3,33 @@ require '../includes/init.php';
 include pathOf("includes/header.php");
 include pathOf("includes/navbar.php");
 
-// SALES (Membership + Clients)
-$dailyMembershipSales = selectOne("SELECT SUM(AmountPaid) AS Total FROM Membership WHERE StartDate = CURDATE() AND IsDelete = 1")['Total'] ?? 0;
+// SALES (Membership + Clients + Appointments)
+$dailyMembershipSales = selectOne("SELECT SUM(Amount) AS Total FROM Sales WHERE DATE(NOW()) = CURDATE()")['Total'] ?? 0;
 $dailyClientSales = selectOne("SELECT SUM(Price) AS Total FROM Clients WHERE Date = CURDATE()")['Total'] ?? 0;
-$dailySales = $dailyMembershipSales + $dailyClientSales;
+$dailyAppointmentSales = selectOne("SELECT SUM(Amount) AS Total FROM Appointments WHERE DATE(AppointmentDate) = CURDATE() AND IsDelete = 1")['Total'] ?? 0;
+$dailySales = $dailyMembershipSales + $dailyClientSales + $dailyAppointmentSales;
 
-$monthlyMembershipSales = selectOne("SELECT SUM(AmountPaid) AS Total FROM Membership WHERE MONTH(StartDate) = MONTH(CURDATE()) AND YEAR(StartDate) = YEAR(CURDATE()) AND IsDelete = 1")['Total'] ?? 0;
+$monthlyMembershipSales = selectOne("SELECT SUM(Amount) AS Total FROM Sales WHERE MONTH(NOW()) = MONTH(CURDATE()) AND YEAR(NOW()) = YEAR(CURDATE())")['Total'] ?? 0;
 $monthlyClientSales = selectOne("SELECT SUM(Price) AS Total FROM Clients WHERE MONTH(Date) = MONTH(CURDATE()) AND YEAR(Date) = YEAR(CURDATE())")['Total'] ?? 0;
-$monthlySales = $monthlyMembershipSales + $monthlyClientSales;
+$monthlyAppointmentSales = selectOne("SELECT SUM(Amount) AS Total FROM Appointments WHERE MONTH(AppointmentDate) = MONTH(CURDATE()) AND YEAR(AppointmentDate) = YEAR(CURDATE()) AND IsDelete = 1")['Total'] ?? 0;
+$monthlySales = $monthlyMembershipSales + $monthlyClientSales + $monthlyAppointmentSales;
 
-$yearlyMembershipSales = selectOne("SELECT SUM(AmountPaid) AS Total FROM Membership WHERE YEAR(StartDate) = YEAR(CURDATE()) AND IsDelete = 1")['Total'] ?? 0;
+$yearlyMembershipSales = selectOne("SELECT SUM(Amount) AS Total FROM Sales WHERE YEAR(NOW()) = YEAR(CURDATE())")['Total'] ?? 0;
 $yearlyClientSales = selectOne("SELECT SUM(Price) AS Total FROM Clients WHERE YEAR(Date) = YEAR(CURDATE())")['Total'] ?? 0;
-$yearlySales = $yearlyMembershipSales + $yearlyClientSales;
+$yearlyAppointmentSales = selectOne("SELECT SUM(Amount) AS Total FROM Appointments WHERE YEAR(AppointmentDate) = YEAR(CURDATE()) AND IsDelete = 1")['Total'] ?? 0;
+$yearlySales = $yearlyMembershipSales + $yearlyClientSales + $yearlyAppointmentSales;
 
 // EXPENSES + SALARIES
 $dailyExpenses = selectOne("SELECT IFNULL(SUM(TotalAmount), 0) AS Total FROM Expenses WHERE Date = CURDATE()")['Total'] ?? 0;
-$dailySalaries = selectOne("SELECT IFNULL(SUM(SalaryPaid), 0) AS Total FROM Employee WHERE SalaryPaidDate = CURDATE()")['Total'] ?? 0;
+$dailySalaries = selectOne("SELECT IFNULL(SUM(GivenSalary), 0) AS Total FROM Employee WHERE SalaryPaidDate = CURDATE()")['Total'] ?? 0;
 $dailyTotalExpenses = $dailyExpenses + $dailySalaries;
 
 $monthlyExpenses = selectOne("SELECT IFNULL(SUM(TotalAmount), 0) AS Total FROM Expenses WHERE MONTH(Date) = MONTH(CURDATE()) AND YEAR(Date) = YEAR(CURDATE())")['Total'] ?? 0;
-$monthlySalaries = selectOne("SELECT IFNULL(SUM(SalaryPaid), 0) AS Total FROM Employee WHERE MONTH(SalaryPaidDate) = MONTH(CURDATE()) AND YEAR(SalaryPaidDate) = YEAR(CURDATE())")['Total'] ?? 0;
+$monthlySalaries = selectOne("SELECT IFNULL(SUM(GivenSalary), 0) AS Total FROM Employee WHERE MONTH(SalaryPaidDate) = MONTH(CURDATE()) AND YEAR(SalaryPaidDate) = YEAR(CURDATE())")['Total'] ?? 0;
 $monthlyTotalExpenses = $monthlyExpenses + $monthlySalaries;
 
 $yearlyExpenses = selectOne("SELECT IFNULL(SUM(TotalAmount), 0) AS Total FROM Expenses WHERE YEAR(Date) = YEAR(CURDATE())")['Total'] ?? 0;
-$yearlySalaries = selectOne("SELECT IFNULL(SUM(SalaryPaid), 0) AS Total FROM Employee WHERE YEAR(SalaryPaidDate) = YEAR(CURDATE())")['Total'] ?? 0;
+$yearlySalaries = selectOne("SELECT IFNULL(SUM(GivenSalary), 0) AS Total FROM Employee WHERE YEAR(SalaryPaidDate) = YEAR(CURDATE())")['Total'] ?? 0;
 $yearlyTotalExpenses = $yearlyExpenses + $yearlySalaries;
 
 function formatCurrency($amount) {
@@ -51,34 +54,58 @@ function formatCurrency($amount) {
 
                 <!-- Sales Cards -->
                 <div class="row">
-                    <div class="col-md-4"><div class="card mini-stats-wid"><div class="card-body">
-                        <p class="text-muted fw-medium">Daily Sales</p>
-                        <h4 class="mb-0"><?= formatCurrency($dailySales) ?></h4>
-                    </div></div></div>
-                    <div class="col-md-4"><div class="card mini-stats-wid"><div class="card-body">
-                        <p class="text-muted fw-medium">Monthly Sales</p>
-                        <h4 class="mb-0"><?= formatCurrency($monthlySales) ?></h4>
-                    </div></div></div>
-                    <div class="col-md-4"><div class="card mini-stats-wid"><div class="card-body">
-                        <p class="text-muted fw-medium">Yearly Sales</p>
-                        <h4 class="mb-0"><?= formatCurrency($yearlySales) ?></h4>
-                    </div></div></div>
+                    <div class="col-md-4">
+                        <div class="card mini-stats-wid">
+                            <div class="card-body">
+                                <p class="text-muted fw-medium">Daily Sales</p>
+                                <h4 class="mb-0"><?= formatCurrency($dailySales) ?></h4>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="card mini-stats-wid">
+                            <div class="card-body">
+                                <p class="text-muted fw-medium">Monthly Sales</p>
+                                <h4 class="mb-0"><?= formatCurrency($monthlySales) ?></h4>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="card mini-stats-wid">
+                            <div class="card-body">
+                                <p class="text-muted fw-medium">Yearly Sales</p>
+                                <h4 class="mb-0"><?= formatCurrency($yearlySales) ?></h4>
+                            </div>
+                        </div>
+                    </div>
                 </div>
 
                 <!-- Expenses Cards -->
                 <div class="row">
-                    <div class="col-md-4"><div class="card mini-stats-wid"><div class="card-body">
-                        <p class="text-muted fw-medium">Daily Expenses</p>
-                        <h4 class="mb-0"><?= formatCurrency($dailyTotalExpenses) ?></h4>
-                    </div></div></div>
-                    <div class="col-md-4"><div class="card mini-stats-wid"><div class="card-body">
-                        <p class="text-muted fw-medium">Monthly Expenses</p>
-                        <h4 class="mb-0"><?= formatCurrency($monthlyTotalExpenses) ?></h4>
-                    </div></div></div>
-                    <div class="col-md-4"><div class="card mini-stats-wid"><div class="card-body">
-                        <p class="text-muted fw-medium">Yearly Expenses</p>
-                        <h4 class="mb-0"><?= formatCurrency($yearlyTotalExpenses) ?></h4>
-                    </div></div></div>
+                    <div class="col-md-4">
+                        <div class="card mini-stats-wid">
+                            <div class="card-body">
+                                <p class="text-muted fw-medium">Daily Expenses</p>
+                                <h4 class="mb-0"><?= formatCurrency($dailyTotalExpenses) ?></h4>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="card mini-stats-wid">
+                            <div class="card-body">
+                                <p class="text-muted fw-medium">Monthly Expenses</p>
+                                <h4 class="mb-0"><?= formatCurrency($monthlyTotalExpenses) ?></h4>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="card mini-stats-wid">
+                            <div class="card-body">
+                                <p class="text-muted fw-medium">Yearly Expenses</p>
+                                <h4 class="mb-0"><?= formatCurrency($yearlyTotalExpenses) ?></h4>
+                            </div>
+                        </div>
+                    </div>
                 </div>
 
                 <!-- PDF Downloads -->
