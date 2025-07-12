@@ -81,7 +81,6 @@ $clients = select("
                                                 <th>Sr No.</th>
                                                 <th>Name</th>
                                                 <th>Mobile</th>
-                                                <th>Therapy</th>
                                                 <th>Therapist Name</th>
                                                 <th>Date</th>
                                                 <th>In Time</th>
@@ -98,7 +97,6 @@ $clients = select("
                                                     <td><?= $index += 1 ?></td>
                                                     <td><?= $client["Name"] ?></td>
                                                     <td><?= $client["Mobile"] ?></td>
-                                                    <td><?= $client["Therapy"] ?></td>
                                                     <td><?= $client["EmployeeName"] ?></td>
                                                     <td><?= $client["Date"] ?></td>
                                                     <td><?= $client["InTime"] ?></td>

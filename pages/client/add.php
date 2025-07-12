@@ -5,6 +5,7 @@ include pathOf("includes/header.php");
 include pathOf("includes/navbar.php");
 
 $employees = select("SELECT * FROM Employee");
+$massages = select("SELECT * FROM Massage");
 
 ?>
     <body data-sidebar="dark">
@@ -78,8 +79,8 @@ $employees = select("SELECT * FROM Employee");
                                                 </div>
                                                 <div class="col-md-4">
                                                     <div class="mb-3">
-                                                        <label for="formrow-email-input" class="form-label">Therapy</label>
-                                                        <input type="text" class="form-control" id="Therapy" name="Therapy" placeholder="Enter Therapy Name">
+                                                        <label for="formrow-email-input" class="form-label">Room No</label>
+                                                        <input type="text" class="form-control" id="RoomNo" name="RoomNo" placeholder="Enter Therapy Name">
                                                     </div>
                                                 </div>
                                                 <div class="col-md-4">
@@ -119,12 +120,9 @@ $employees = select("SELECT * FROM Employee");
                                                     <div class="mb-3">
                                                         <label for="formrow-inputCity" class="form-label">Massage</label>
                                                         <select name="Massage" id="Massage" class="form-select">
-                                                            <option value="">Select Massage</option>
-                                                            <option value="Swedish">Swedish</option>
-                                                            <option value="Deep Tissue">Deep Tissue</option>
-                                                            <option value="Aromatherapy">Aromatherapy</option>
-                                                            <option value="Hot Stone">Hot Stone</option>
-                                                            <option value="Thai">Thai</option>
+                                                            <?php foreach ($massages as $massage): ?>
+                                                                <option value="<?= $massage['Name'] ?>"><?= $massage['Name'] ?></option>
+                                                            <?php endforeach; ?>
                                                         </select>
                                                     </div>
                                                 </div>
@@ -167,7 +165,7 @@ include pathOf("includes/scripts.php");
     function insertData() {
         var Name = $('#Name').val();
         var Mobile = $('#Mobile').val();
-        var Therapy = $('#Therapy').val();
+        var RoomNo = $('#RoomNo').val();
         var EmployeeId = $('#EmployeeId').val();
         var Date = $('#Date').val();
         var InTime = $('#InTime').val();
@@ -182,7 +180,7 @@ include pathOf("includes/scripts.php");
             data: {
                 Name: Name,
                 Mobile: Mobile,
-                Therapy: Therapy,
+                RoomNo: RoomNo,
                 EmployeeId: EmployeeId,
                 Date: Date,
                 InTime: InTime,

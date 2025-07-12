@@ -5,7 +5,7 @@
 
     $Name = $_POST['Name'];
     $Mobile = $_POST['Mobile'];
-    $Therapy = $_POST['Therapy'];
+    $RoomNo = $_POST['RoomNo'];
     $EmployeeId = $_POST['EmployeeId'];
     $Date = $_POST['Date'];
     $InTime = $_POST['InTime'];
@@ -14,8 +14,8 @@
     $Payment = $_POST['Payment'];
     $Massage = $_POST['Massage'] ?? ''; // Optional field for Massage
 
-    $query = "INSERT INTO Clients (Name,Mobile,Therapy,EmployeeId,Date,InTime,OutTime,Price,PaymentMode,Massage) VALUES (?,?,?,?,?,?,?,?,?,?)";
-    $param = [$Name, $Mobile, $Therapy, $EmployeeId, $Date, $InTime, $OutTime, $Price, $Payment, $Massage];
+    $query = "INSERT INTO Clients (Name,Mobile,RoomNo,EmployeeId,Date,InTime,OutTime,Price,PaymentMode,Massage) VALUES (?,?,?,?,?,?,?,?,?,?)";
+    $param = [$Name, $Mobile, $RoomNo, $EmployeeId, $Date, $InTime, $OutTime, $Price, $Payment, $Massage];
 
     execute($query, $param);
 

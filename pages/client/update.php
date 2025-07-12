@@ -6,6 +6,8 @@ include pathOf("includes/navbar.php");
 
 $Id = $_POST["Id"];
 $clients = selectOne("SELECT * FROM Clients WHERE Id = $Id");
+$employees = select("SELECT * FROM Employee");
+$massages = select("SELECT * FROM Massage");
 
 ?>
     <body data-sidebar="dark">
@@ -80,14 +82,19 @@ $clients = selectOne("SELECT * FROM Clients WHERE Id = $Id");
                                                 </div>
                                                 <div class="col-md-4">
                                                     <div class="mb-3">
-                                                        <label for="formrow-email-input" class="form-label">Therapy</label>
-                                                        <input type="text" class="form-control" id="Therapy" name="Therapy" placeholder="Enter Therapy Name" value="<?= $clients['Therapy'] ?>">
+                                                        <label for="formrow-email-input" class="form-label">Room No</label>
+                                                        <input type="text" class="form-control" id="RoomNo" name="RoomNo" placeholder="Enter Room No" value="<?= $clients['RoomNo'] ?>">
                                                     </div>
                                                 </div>
                                                 <div class="col-md-4">
                                                     <div class="mb-3">
                                                         <label for="formrow-password-input" class="form-label">Therapist Name</label>
-                                                        <input type="text" class="form-control" id="TherapistName" name="TherapistName" placeholder="Enter Therapist Name" value="<?= $clients['TherapistName'] ?>">
+                                                        <select name="EmployeeId" id="EmployeeId" class="form-select">
+                                                            <option value="">Select Therapist</option>
+                                                            <?php foreach ($employees as $employee): ?>
+                                                                <option value="<?= $employee['Id'] ?>"><?= $employee['Name'] ?></option>
+                                                            <?php endforeach; ?>
+                                                        </select>
                                                     </div>
                                                 </div>
                                             </div>
@@ -112,16 +119,32 @@ $clients = selectOne("SELECT * FROM Clients WHERE Id = $Id");
                                                 </div>
                                             </div>
                                             <div class="row">
-                                                <div class="col-lg-6">
+                                                <div class="col-lg-4">
+                                                    <div class="mb-3">
+                                                        <label for="formrow-inputCity" class="form-label">Massage</label>
+                                                        <select name="Massage" id="Massage" class="form-select">
+                                                            <?php foreach ($massages as $massage): ?>
+                                                                <option value="<?= $massage['Name'] ?>"><?= $massage['Name'] ?></option>
+                                                            <?php endforeach; ?>
+                                                        </select>
+                                                    </div>
+                                                </div>
+                                                <div class="col-lg-4">
                                                     <div class="mb-3">
                                                         <label for="formrow-inputCity" class="form-label">Price</label>
                                                         <input type="number" class="form-control" id="Price" name="Price" placeholder="Enter Price" value="<?= $clients['Price'] ?>">
                                                     </div>
                                                 </div>
-                                                <div class="col-lg-6">
+                                                <div class="col-lg-4">
                                                     <div class="mb-3">
-                                                        <label for="formrow-inputCity" class="form-label">Payment</label>
-                                                        <input type="number" class="form-control" id="Payment" name="Payment" placeholder="Enter Payment" value="<?= $clients['Payment'] ?>">
+                                                        <label for="formrow-inputCity" class="form-label">Payment Mode</label>
+                                                        <select name="PaymentMode" id="PaymentMode" class="form-select">
+                                                            <option value="">Select Payment Mode</option>
+                                                            <option value="Cash">Cash</option>
+                                                            <option value="Credit Card">Credit Card</option>
+                                                            <option value="Debit Card">Debit Card</option>
+                                                            <option value="UPI">UPI</option>
+                                                        </select>
                                                     </div>
                                                 </div>
                                             </div>
@@ -146,7 +169,7 @@ include pathOf("includes/scripts.php");
         var Id = $('#Id').val();
         var Name = $('#Name').val();
         var Mobile = $('#Mobile').val();
-        var Therapy = $('#Therapy').val();
+        var RoomNo = $('#RoomNo').val();
         var TherapistName = $('#TherapistName').val();
         var Date = $('#Date').val();
         var InTime = $('#InTime').val();
@@ -161,7 +184,7 @@ include pathOf("includes/scripts.php");
                 Id: Id,
                 Name: Name,
                 Mobile: Mobile,
-                Therapy: Therapy,
+                RoomNo: RoomNo,
                 TherapistName: TherapistName,
                 Date: Date,
                 InTime: InTime,

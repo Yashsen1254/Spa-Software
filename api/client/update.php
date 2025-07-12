@@ -5,7 +5,7 @@
     $Id = $_POST['Id'];
     $Name = $_POST['Name'];
     $Mobile = $_POST['Mobile'];
-    $Therapy = $_POST['Therapy'];
+    $RoomNo = $_POST['RoomNo'];
     $TherapistName = $_POST['TherapistName'];
     $Date = $_POST['Date'];
     $InTime = $_POST['InTime'];
@@ -13,8 +13,8 @@
     $Price = $_POST['Price'];
     $Payment = $_POST['Payment'];
 
-    $query = "UPDATE Clients SET Name = ?, Mobile = ?, Therapy = ?, TherapistName = ?, Date = ?, InTime = ?, OutTime = ?, Price = ?, Payment = ? WHERE Id = ?";
-    $param = [$Name, $Mobile, $Therapy, $TherapistName, $Date, $InTime, $OutTime, $Price, $Payment, $Id];
+    $query = "UPDATE Clients SET Name = ?, Mobile = ?, RoomNo = ?, TherapistName = ?, Date = ?, InTime = ?, OutTime = ?, Price = ?, Payment = ? WHERE Id = ?";
+    $param = [$Name, $Mobile, $RoomNo, $TherapistName, $Date, $InTime, $OutTime, $Price, $Payment, $Id];
 
     $result = execute($query, $param);
 
