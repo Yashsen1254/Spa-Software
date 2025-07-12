@@ -13,6 +13,7 @@ if (!isset($_POST["Id"])) {
 $Id = (int) $_POST["Id"];
 $index = 0;
 
+// Fetch membership details
 $membership = selectOne(
     "SELECT Membership.*, Services.Name AS ServiceName, Services.NoOfAppointments 
      FROM Membership 
@@ -28,15 +29,30 @@ if (!$membership) {
 
 $noOfAppointments = (int)$membership['NoOfAppointments'];
 $employees = select("SELECT * FROM Employee");
+$massages = select("SELECT * FROM Massage");
+
+// Massage types
+$allMassages = ["Swedish", "Deep Tissue", "Aromatherapy", "Hot Stone", "Thai"];
+
+// Fetch massages already booked for this member
+$bookedMassagesResult = select(
+    "SELECT DISTINCT Massage FROM Appointments WHERE MemberId = ? AND IsDelete = 1",
+    [$Id]
+);
+$bookedMassages = array_column($bookedMassagesResult, 'Massage');
+$availableMassages = array_values(array_diff($allMassages, $bookedMassages)); // Remaining massages
 
 // Handle appointments submission
 if (isset($_POST['save_appointments'])) {
     $employeeIds = $_POST['employee_id'] ?? [];
     $roomNos = $_POST['room_no'] ?? [];
     $appointmentDates = $_POST['appointment_date'] ?? [];
-    $massage = $_POST['massage'] ?? [];
+    $massages = $_POST['massage'] ?? [];
     $inTimes = $_POST['appointment_time'] ?? [];
     $outTimes = $_POST['out_time'] ?? [];
+    $amounts = $_POST['amount'] ?? [];
+
+    $totalDeducted = 0;
 
     for ($i = 0; $i < count($employeeIds); $i++) {
         if (
@@ -44,16 +60,40 @@ if (isset($_POST['save_appointments'])) {
             !empty($roomNos[$i]) && 
             !empty($appointmentDates[$i]) && 
             !empty($inTimes[$i]) && 
-            !empty($outTimes[$i])
+            !empty($outTimes[$i]) &&
+            !empty($amounts[$i]) &&
+            !empty($massages[$i])
         ) {
+            // Check for duplicate massage (backend validation)
+            if (in_array($massages[$i], $bookedMassages)) {
+                echo "<script>alert('Massage \"{$massages[$i]}\" has already been booked.'); window.history.back();</script>";
+                exit;
+            }
+
             $datetime = $appointmentDates[$i] . ' ' . $inTimes[$i];
+
+            // Insert appointment
             execute(
-                "INSERT INTO Appointments (MemberId, EmployeeId, RoomNo, Massage, AppointmentDate, InTime, OutTime, IsDelete) 
-                 VALUES (?, ?, ?, ?, ?, ?, ?, 1)", 
-                [$Id, $employeeIds[$i], $roomNos[$i], $massage[$i], $datetime, $inTimes[$i], $outTimes[$i]]
+                "INSERT INTO Appointments (MemberId, EmployeeId, RoomNo, Massage, AppointmentDate, InTime, OutTime, Amount, IsDelete) 
+                 VALUES (?, ?, ?, ?, ?, ?, ?, ?, 1)", 
+                [$Id, $employeeIds[$i], $roomNos[$i], $massages[$i], $datetime, $inTimes[$i], $outTimes[$i], $amounts[$i]]
             );
+
+            $totalDeducted += (float)$amounts[$i]; // Add to deduction total
+            $bookedMassages[] = $massages[$i]; // Update booked massages in memory
         }
     }
+
+    // Deduct total amount from membership TotalAmount
+    $newTotalAmount = (float)$membership['TotalAmount'] - $totalDeducted;
+    if ($newTotalAmount < 0) {
+        $newTotalAmount = 0; // Prevent negative TotalAmount
+    }
+
+    execute(
+        "UPDATE Membership SET TotalAmount = ? WHERE Id = ?",
+        [$newTotalAmount, $Id]
+    );
 
     echo "<script>alert('Appointments saved successfully!'); window.location.href='index.php';</script>";
     exit;
@@ -69,17 +109,18 @@ $appointments = select(
 );
 ?>
 
+
 <body data-sidebar="dark">
 <div id="layout-wrapper">
     <header id="page-topbar">
         <div class="navbar-header">
             <div class="d-flex">
                 <div class="navbar-brand-box">
-                    <a href="index.html" class="logo logo-dark">
+                    <a href="index.php" class="logo logo-dark">
                         <span class="logo-sm"><img src="assets/images/logo.svg" alt="" height="22"></span>
                         <span class="logo-lg"><img src="assets/images/logo-dark.png" alt="" height="17"></span>
                     </a>
-                    <a href="index.html" class="logo logo-light">
+                    <a href="index.php" class="logo logo-light">
                         <span class="logo-sm"><img src="assets/images/logo-light.svg" alt="" height="22"></span>
                         <span class="logo-lg"><img src="assets/images/logo-light.png" alt="" height="19"></span>
                     </a>
@@ -117,8 +158,7 @@ $appointments = select(
                                             <th>Address</th>
                                             <th>Age</th>
                                             <th>Email</th>
-                                            <th>Amount Paid</th>
-                                            <th>Amount Due</th>
+                                            <th>Total Amount</th>
                                             <th>Service</th>
                                             <th>Start Date</th>
                                             <th>End Date</th>
@@ -132,8 +172,7 @@ $appointments = select(
                                             <td><?= $membership['Address'] ?></td>
                                             <td><?= $membership['Age'] ?></td>
                                             <td><?= $membership['Email'] ?></td>
-                                            <td><?= $membership['AmountPaid'] ?></td>
-                                            <td><?= $membership['AmountDue'] ?></td>
+                                            <td>₹<?= number_format($membership['TotalAmount'], 2) ?></td>
                                             <td><?= $membership['ServiceName'] ?></td>
                                             <td><?= $membership['StartDate'] ?></td>
                                             <td><?= $membership['EndDate'] ?></td>
@@ -162,6 +201,7 @@ $appointments = select(
                                                 <th>Date</th>
                                                 <th>In Time</th>
                                                 <th>Out Time</th>
+                                                <th>Amount</th>
                                             </tr>
                                         </thead>
                                         <tbody id="appointmentsBody">
@@ -173,6 +213,7 @@ $appointments = select(
                                                     <td><?= date('Y-m-d', strtotime($appointment['AppointmentDate'])) ?></td>
                                                     <td><?= $appointment['InTime'] ?></td>
                                                     <td><?= $appointment['OutTime'] ?></td>
+                                                    <td>₹<?= number_format($appointment['Amount'], 2) ?></td>
                                                 </tr>
                                             <?php endforeach; ?>
                                         </tbody>
@@ -194,6 +235,7 @@ $appointments = select(
 <script>
     const maxAppointments = <?= $noOfAppointments ?>;
     const existingAppointments = <?= count($appointments) ?>;
+    let availableMassages = <?= json_encode($availableMassages) ?>;
 
     function addRow() {
         const addedRows = document.querySelectorAll('#appointmentsTable tbody tr.new-row').length;
@@ -201,6 +243,11 @@ $appointments = select(
 
         if (totalAppointments >= maxAppointments) {
             alert("You cannot add more appointments. Maximum allowed is " + maxAppointments + ".");
+            return;
+        }
+
+        if (availableMassages.length === 0) {
+            alert("All massage types have already been booked.");
             return;
         }
 
@@ -217,22 +264,38 @@ $appointments = select(
             </td>
             <td><input type="number" name="room_no[]" class="form-control" required></td>
             <td>
-                <select name="massage[]" class="form-control" required>
-                    <option value="">Select Massage</option>
-                    <option value="Swedish">Swedish</option>
-                    <option value="Deep Tissue">Deep Tissue</option>
-                    <option value="Aromatherapy">Aromatherapy</option>
-                    <option value="Hot Stone">Hot Stone</option>
-                    <option value="Thai">Thai</option>
-                </select>
-            </td>
+    <select name="massage[]" class="form-control massage-select" required onchange="removeSelectedMassage(this)">
+        <option value="">Select Massage</option>
+        <?= implode("", array_map(fn($m) => "<option value=\"{$m['Name']}\">{$m['Name']}</option>", $massages)) ?>
+    </select>
+</td>
+
             <td><input type="date" name="appointment_date[]" class="form-control" required></td>
             <td><input type="time" name="appointment_time[]" class="form-control" required></td>
             <td><input type="time" name="out_time[]" class="form-control" required></td>
+            <td><input type="number" name="amount[]" class="form-control" placeholder="Enter Amount" step="0.01" required></td>
         `;
         tbody.appendChild(row);
     }
+
+    function removeSelectedMassage(selectElement) {
+        const selectedMassage = selectElement.value;
+
+        if (selectedMassage) {
+            // Remove selected massage from availableMassages
+            availableMassages = availableMassages.filter(m => m !== selectedMassage);
+
+            // Disable selected option in all other dropdowns
+            document.querySelectorAll('.massage-select').forEach(sel => {
+                if (sel !== selectElement) {
+                    const option = sel.querySelector(`option[value="${selectedMassage}"]`);
+                    if (option) option.remove();
+                }
+            });
+        }
+    }
 </script>
+
 
 <?php
 include pathOf("includes/scripts.php");

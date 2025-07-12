@@ -75,8 +75,7 @@ $memberships = select("SELECT * FROM Membership WHERE IsDelete = 1");
                                                 <th>Sr No.</th>
                                                 <th>Name</th>
                                                 <th>Mobile</th>
-                                                <th>Amount Paid</th>
-                                                <th>Amount Due</th>
+                                                <th>Total Amount</th>
                                                 <th>Update</th>
                                                 <th>Delete</th>
                                                 <th>View</th>
@@ -88,8 +87,7 @@ $memberships = select("SELECT * FROM Membership WHERE IsDelete = 1");
                                                     <td><?= $index += 1 ?></td>
                                                     <td><?= $membership["Name"] ?></td>
                                                     <td><?= $membership["Mobile"] ?></td>
-                                                    <td><?= $membership["AmountPaid"] ?></td>
-                                                    <td><?= $membership["AmountDue"] ?></td>
+                                                    <td><?= $membership["TotalAmount"] ?></td>
                                                     <form action="update.php" method="POST">
                                                         <td>
                                                             <input type="hidden" name="Id" id="Id" value="<?= $membership['Id'] ?>">

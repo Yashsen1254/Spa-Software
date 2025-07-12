@@ -106,18 +106,6 @@ $services = select("SELECT * FROM Services");
                                         <div class="row">
                                             <div class="col-md-4">
                                                 <div class="mb-3">
-                                                    <label for="formrow-inputCity" class="form-label">Amount Paid</label>
-                                                    <input type="number" class="form-control" id="AmountPaid" name="AmountPaid" placeholder="Enter Amount Paid"  value="<?= $membership['AmountPaid'] ?>">
-                                                </div>
-                                            </div>
-                                            <div class="col-md-4">
-                                                <div class="mb-3">
-                                                    <label for="formrow-password-input" class="form-label">Amount Due</label>
-                                                    <input type="number" class="form-control" id="AmountDue" name="AmountDue" placeholder="Enter Amount Due"  value="<?= $membership['AmountDue'] ?>">
-                                                </div>
-                                            </div>
-                                            <div class="col-md-4">
-                                                <div class="mb-3">
                                                     <label for="formrow-password-input" class="form-label">Total Amount</label>
                                                     <input type="number" class="form-control" id="TotalAmount" name="TotalAmount" placeholder="Enter Total Amount"  value="<?= $membership['TotalAmount'] ?>">
                                                 </div>
@@ -147,6 +135,15 @@ $services = select("SELECT * FROM Services");
                                                     <input type="hidden" id="IsDelete" name="IsDelete" value="<?= $membership['IsDelete'] ?>">
                                                 </div>
                                             </div>
+                                            <div class="col-md-4">
+                                                <div class="mb-3">
+                                                    <label for="formrow-password-input" class="form-label">Payment Mode</label>
+                                                    <select name="PaymentMode" id="PaymentMode" class="form-select">
+                                                        <option value="Cash">Cash</option>
+                                                        <option value="Online">Online</option>
+                                                    </select>
+                                                </div>
+                                            </div>
                                         </div>
                                         </div>
                                         <div>
@@ -170,13 +167,11 @@ $services = select("SELECT * FROM Services");
                 var Address = $('#Address').val();
                 var Age = $('#Age').val();
                 var Email = $('#Email').val();
-                var AmountPaid = $('#AmountPaid').val();
-                var AmountDue = $('#AmountDue').val();
                 var TotalAmount = $('#TotalAmount').val();
                 var ServiceId = $('#ServiceId').val();
                 var StartDate = $('#StartDate').val();
                 var EndDate = $('#EndDate').val();
-                var IsDelete = $('#IsDelete').val();
+                var PaymentMode = $('#PaymentMode').val();
 
                 $.ajax({
                     url: '../../api/membership/update.php',
@@ -188,13 +183,11 @@ $services = select("SELECT * FROM Services");
                         Address: Address,
                         Age: Age,
                         Email: Email,
-                        AmountPaid: AmountPaid,
-                        AmountDue: AmountDue,
                         TotalAmount: TotalAmount,
                         ServiceId: ServiceId,
                         StartDate: StartDate,
                         EndDate: EndDate,
-                        IsDelete: IsDelete
+                        PaymentMode: PaymentMode
                     },
                     success: function(response) {
                         window.location.href = 'index.php';
