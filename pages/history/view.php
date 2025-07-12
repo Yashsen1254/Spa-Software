@@ -93,7 +93,7 @@ usort($allWork, function($a, $b) {
             </tbody>
         </table>
 
-        <form action="employeePdf.php" method="POST">
+        <form action="empDetail.php" method="POST">
             <input type="hidden" name="Id" value="<?= $employeeId ?>">
             <button type="submit" class="btn btn-success">Download PDF</button>
         </form>
