@@ -21,8 +21,6 @@ CREATE TABLE `Membership` (
     `Address` VARCHAR(100) NULL,
     `Age` INT NULL,
     `Email` VARCHAR(100) NULL,
-    `AmountPaid` DECIMAL(10, 2) NULL,
-    `AmountDue` DECIMAL(10, 2) NULL,
     `TotalAmount` DECIMAL(10, 2) NULL,
     `StartDate` DATE NULL,
     `EndDate` DATE NULL,
@@ -61,9 +59,15 @@ CREATE TABLE `Appointments` (
     `AppointmentDate` DATETIME NULL,
     `InTime` TIME NULL,
     `OutTime` TIME NULL,
+    `Amount` DECIMAL(10, 2) NULL,
     `IsDelete` INT NULL DEFAULT 1,
     FOREIGN KEY (`MemberId`) REFERENCES `Membership`(`Id`),
     FOREIGN KEY (`EmployeeId`) REFERENCES `Employee`(`Id`)
+);
+
+CREATE TABLE `Massage` (
+    `Id` INT PRIMARY KEY AUTO_INCREMENT,
+    `Name` VARCHAR(100) NULL
 );
 
 CREATE TABLE `Sales` (
@@ -97,8 +101,8 @@ CREATE TABLE `Clients` (
     `Id` INT PRIMARY KEY AUTO_INCREMENT,
     `Name` VARCHAR(100) NULL,
     `Mobile` INT NULL,
-    `Therapy` VARCHAR(100) NULL,
     `EmployeeId` INT NULL,
+    `RoomNo` INT NULL,
     `Date` DATE NULL,
     `InTime` TIME NULL,
     `OutTime` TIME NULL,
