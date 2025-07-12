@@ -23,6 +23,12 @@
                     </a>
                 </li>
                 <li>
+                    <a href="<?= urlOf("pages/massage/index.php") ?>" class="has-arrow waves-effect">
+                        <i class="bx bx-cog"></i>
+                        <span key="t-dashboards">Massage</span>
+                    </a>
+                </li>
+                <li>
                     <a href="<?= urlOf("pages/membership/index.php") ?>" class="has-arrow waves-effect">
                         <i class="bx bx-id-card"></i>
                         <span key="t-dashboards">Membership</span>
