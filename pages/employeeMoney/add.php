@@ -3,11 +3,24 @@ require '../../includes/init.php';
 include pathOf("includes/header.php");
 include pathOf("includes/navbar.php");
 
-// Get employee details
-$Id = $_POST["Id"] ?? 0;
-$employees = selectOne("SELECT * FROM Employee WHERE Id = ?", [$Id]);
+// ✅ Get employee ID from POST or GET
+$Id = $_POST["Id"] ?? $_GET["id"] ?? 0;
+$Id = (int)$Id;
 
-// Handle form submission
+// Redirect if no valid employee ID
+if ($Id <= 0) {
+    echo "<script>alert('Invalid Employee ID'); window.location.href='all-employees.php';</script>";
+    exit;
+}
+
+// ✅ Fetch specific employee details
+$employee = selectOne("SELECT * FROM Employee WHERE Id = ?", [$Id]);
+if (!$employee) {
+    echo "<script>alert('Employee not found'); window.location.href='all-employees.php';</script>";
+    exit;
+}
+
+// ✅ Handle form submission
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['saveSalary'])) {
     $salaryData = $_POST['salary'] ?? [];
 
@@ -18,20 +31,22 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['saveSalary'])) {
                 $GivenSalary = (int)$row['amount'];
                 $PaymentMode = $row['mode'];
 
-                // ✅ Increment GivenSalary safely
-                execute("
-                    UPDATE Employee 
-                    SET 
-                        GivenSalary = COALESCE(GivenSalary, 0) + ?, 
-                        SalaryPaidDate = ?, 
-                        PaymentMode = ?
-                    WHERE Id = ?
-                ", [$GivenSalary, $SalaryPaidDate, $PaymentMode, $Id]);
+                if ($GivenSalary > 0 && !empty($SalaryPaidDate) && !empty($PaymentMode)) {
+                    // ✅ Increment GivenSalary safely
+                    execute("
+                        UPDATE Employee 
+                        SET 
+                            GivenSalary = COALESCE(GivenSalary, 0) + ?, 
+                            SalaryPaidDate = ?, 
+                            PaymentMode = ?
+                        WHERE Id = ?
+                    ", [$GivenSalary, $SalaryPaidDate, $PaymentMode, $Id]);
+                }
             }
 
             $successMessage = "Salaries saved successfully!";
             // Refresh employee data after update
-            $employees = selectOne("SELECT * FROM Employee WHERE Id = ?", [$Id]);
+            $employee = selectOne("SELECT * FROM Employee WHERE Id = ?", [$Id]);
 
         } catch (Exception $e) {
             $errorMessage = "Error: " . $e->getMessage();
@@ -40,39 +55,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['saveSalary'])) {
         $errorMessage = "No salary data provided!";
     }
 }
-
-// Fetch all employees for summary
-$allEmployees = select("SELECT Id, Name, GivenSalary FROM Employee");
-
 ?>
 
 <body data-sidebar="dark">
     <div id="layout-wrapper">
-        <header id="page-topbar">
-            <div class="navbar-header">
-                <div class="d-flex">
-                    <div class="navbar-brand-box">
-                        <a href="index.html" class="logo logo-dark">
-                            <span class="logo-sm">
-                                <img src="assets/images/logo.svg" alt="" height="22">
-                            </span>
-                            <span class="logo-lg">
-                                <img src="assets/images/logo-dark.png" alt="" height="17">
-                            </span>
-                        </a>
-                        <a href="index.html" class="logo logo-light">
-                            <span class="logo-sm">
-                                <img src="assets/images/logo-light.svg" alt="" height="22">
-                            </span>
-                            <span class="logo-lg">
-                                <img src="assets/images/logo-light.png" alt="" height="19">
-                            </span>
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </header>
-
         <div class="main-content">
             <div class="page-content">
                 <div class="container-fluid">
@@ -81,12 +67,12 @@ $allEmployees = select("SELECT Id, Name, GivenSalary FROM Employee");
                     <div class="row">
                         <div class="col-12">
                             <div class="page-title-box d-sm-flex align-items-center justify-content-between">
-                                <h4 class="mb-sm-0 font-size-18"><?= htmlspecialchars($employees["Name"]) ?></h4>
-                                <h4 class="mb-sm-0 font-size-18">Total Salary: ₹<?= $employees["TotalSalary"] ?></h4>                                
-                                <h4 class="mb-sm-0 font-size-18">Given Salary: ₹<?= $employees["GivenSalary"] ?></h4>
-                                <h4 class="mb-sm-0 font-size-18 pending-salary">
-                                    Pending Salary: ₹<?= max(($employees["TotalSalary"] - $employees["GivenSalary"]), 0) ?>
-                                </h4>
+                                <h4 class="mb-sm-0 font-size-18"><?= htmlspecialchars($employee["Name"]) ?>'s Salary</h4>
+                                <h5>Total Salary: ₹<?= $employee["TotalSalary"] ?></h5>
+                                <h5>Given Salary: ₹<?= $employee["GivenSalary"] ?></h5>
+                                <h5 class="pending-salary">
+                                    Pending Salary: ₹<?= max(($employee["TotalSalary"] - $employee["GivenSalary"]), 0) ?>
+                                </h5>
                             </div>
                         </div>
                     </div>
@@ -105,7 +91,7 @@ $allEmployees = select("SELECT Id, Name, GivenSalary FROM Employee");
                             <div class="card">
                                 <div class="card-body">
                                     <form method="POST">
-                                        <input type="hidden" name="Id" value="<?= $employees['Id'] ?>">
+                                        <input type="hidden" name="Id" value="<?= $employee['Id'] ?>">
                                         <input type="hidden" name="saveSalary" value="1">
 
                                         <table id="salaryTable" class="table table-bordered dt-responsive nowrap w-100">
@@ -113,8 +99,8 @@ $allEmployees = select("SELECT Id, Name, GivenSalary FROM Employee");
                                                 <tr>
                                                     <th>Sr No.</th>
                                                     <th>Date</th>
-                                                    <th>Amount Taken</th>
-                                                    <th>Mode</th>
+                                                    <th>Amount Paid</th>
+                                                    <th>Payment Mode</th>
                                                     <th>Action</th>
                                                 </tr>
                                             </thead>
@@ -131,30 +117,30 @@ $allEmployees = select("SELECT Id, Name, GivenSalary FROM Employee");
                         </div>
                     </div>
 
-                    <!-- Salary Summary Table -->
+                    <!-- Salary Summary for Specific Employee -->
                     <div class="row">
                         <div class="col-12 mt-4">
                             <div class="card">
                                 <div class="card-header">
-                                    <h5 class="card-title">Salary Summary</h5>
+                                    <h5 class="card-title">Salary Summary (<?= htmlspecialchars($employee['Name']) ?>)</h5>
                                 </div>
                                 <div class="card-body">
                                     <table class="table table-bordered">
                                         <thead>
                                             <tr>
-                                                <th>Sr No.</th>
-                                                <th>Name</th>
+                                                <th>Employee Name</th>
                                                 <th>Given Salary</th>
+                                                <th>Total Salary</th>
+                                                <th>Pending Salary</th>
                                             </tr>
                                         </thead>
                                         <tbody>
-                                            <?php $sr = 1; foreach ($allEmployees as $emp) : ?>
-                                                <tr>
-                                                    <td><?= $sr++ ?></td>
-                                                    <td><?= htmlspecialchars($emp['Name']) ?></td>
-                                                    <td>₹<?= $emp['GivenSalary'] ?></td>
-                                                </tr>
-                                            <?php endforeach; ?>
+                                            <tr>
+                                                <td><?= htmlspecialchars($employee['Name']) ?></td>
+                                                <td>₹<?= $employee['GivenSalary'] ?></td>
+                                                <td>₹<?= $employee['TotalSalary'] ?></td>
+                                                <td>₹<?= max(($employee['TotalSalary'] - $employee['GivenSalary']), 0) ?></td>
+                                            </tr>
                                         </tbody>
                                     </table>
                                 </div>
@@ -171,8 +157,8 @@ $allEmployees = select("SELECT Id, Name, GivenSalary FROM Employee");
 
     <script>
         let rowIndex = 0;
-        let totalSalary = <?= (int)$employees['TotalSalary'] ?>;
-        let alreadyGiven = <?= (int)$employees['GivenSalary'] ?>;
+        let totalSalary = <?= (int)$employee['TotalSalary'] ?>;
+        let alreadyGiven = <?= (int)$employee['GivenSalary'] ?>;
 
         function addRow() {
             rowIndex++;
