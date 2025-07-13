@@ -17,10 +17,11 @@ $pdf->Ln(10);
 $pdf->SetFont('Arial', 'B', 14);
 $pdf->Cell(0, 10, 'Membership Sales', 0, 1);
 $pdf->SetFont('Arial', 'B', 12);
-$pdf->Cell(60, 10, 'Customer Name', 1);
-$pdf->Cell(40, 10, 'Total Amount', 1); // From Appointments
-$pdf->Cell(45, 10, 'Start Date', 1);
-$pdf->Cell(45, 10, 'End Date', 1);
+$pdf->Cell(50, 10, 'Customer Name', 1);
+$pdf->Cell(30, 10, 'Amount', 1);
+$pdf->Cell(30, 10, 'Start Date', 1);
+$pdf->Cell(30, 10, 'End Date', 1);
+$pdf->Cell(50, 10, 'Payment Mode', 1);
 $pdf->Ln();
 
 $pdf->SetFont('Arial', '', 12);
@@ -29,7 +30,8 @@ $membershipRows = select("
         m.Name,
         COALESCE(SUM(a.Amount), 0) AS TotalAmount, -- Sum of Appointment.Amount for the month
         m.StartDate,
-        m.EndDate
+        m.EndDate,
+        m.PaymentMode
     FROM Membership m
     LEFT JOIN Appointments a 
         ON m.Id = a.MemberId 
@@ -42,55 +44,58 @@ $membershipRows = select("
 
 $totalMembership = 0;
 foreach ($membershipRows as $row) {
-    $pdf->Cell(60, 10, $row['Name'], 1);
-    $pdf->Cell(40, 10, number_format($row['TotalAmount'], 2), 1);
-    $pdf->Cell(45, 10, $row['StartDate'], 1);
-    $pdf->Cell(45, 10, $row['EndDate'], 1);
+    $pdf->Cell(50, 10, substr($row['Name'], 0, 20) . (strlen($row['Name']) > 20 ? '...' : ''), 1);
+    $pdf->Cell(30, 10, number_format($row['TotalAmount'], 2), 1);
+    $pdf->Cell(30, 10, $row['StartDate'], 1);
+    $pdf->Cell(30, 10, $row['EndDate'], 1);
+    $pdf->Cell(50, 10, substr($row['PaymentMode'] ?? 'N/A', 0, 20), 1);
     $pdf->Ln();
     $totalMembership += $row['TotalAmount'];
 }
 $pdf->SetFont('Arial', 'B', 12);
-$pdf->Cell(60, 10, 'Total Membership', 1);
-$pdf->Cell(40, 10, 'Rs ' . number_format($totalMembership, 2), 1);
-$pdf->Cell(90, 10, '', 1);
+$pdf->Cell(50, 10, 'Total Membership', 1);
+$pdf->Cell(30, 10, 'Rs ' . number_format($totalMembership, 2), 1);
+$pdf->Cell(110, 10, '', 1);
 $pdf->Ln(15);
 
 // ===== Client Sales =====
 $pdf->SetFont('Arial', 'B', 14);
 $pdf->Cell(0, 10, 'Client Sales', 0, 1);
 $pdf->SetFont('Arial', 'B', 12);
-$pdf->Cell(70, 10, 'Customer Name', 1);
-$pdf->Cell(40, 10, 'Price', 1);
-$pdf->Cell(60, 10, 'Date', 1);
+$pdf->Cell(50, 10, 'Customer Name', 1);
+$pdf->Cell(30, 10, 'Price', 1);
+$pdf->Cell(40, 10, 'Date', 1);
+$pdf->Cell(50, 10, 'Payment Mode', 1);
 $pdf->Ln();
 
 $pdf->SetFont('Arial', '', 12);
 $clientRows = select("
-    SELECT Name, Price, Date
+    SELECT Name, Price, Date, PaymentMode
     FROM Clients
     WHERE MONTH(Date) = ? AND YEAR(Date) = ?",
     [$month, $year]);
 
 $totalClientSales = 0;
 foreach ($clientRows as $row) {
-    $pdf->Cell(70, 10, $row['Name'], 1);
-    $pdf->Cell(40, 10, number_format($row['Price'], 2), 1);
-    $pdf->Cell(60, 10, $row['Date'], 1);
+    $pdf->Cell(50, 10, substr($row['Name'], 0, 20) . (strlen($row['Name']) > 20 ? '...' : ''), 1);
+    $pdf->Cell(30, 10, number_format($row['Price'], 2), 1);
+    $pdf->Cell(40, 10, $row['Date'], 1);
+    $pdf->Cell(50, 10, substr($row['PaymentMode'] ?? 'N/A', 0, 20), 1);
     $pdf->Ln();
     $totalClientSales += $row['Price'];
 }
 $pdf->SetFont('Arial', 'B', 12);
-$pdf->Cell(70, 10, 'Total Client Sales', 1);
-$pdf->Cell(40, 10, 'Rs ' . number_format($totalClientSales, 2), 1);
-$pdf->Cell(60, 10, '', 1);
+$pdf->Cell(50, 10, 'Total Client Sales', 1);
+$pdf->Cell(30, 10, 'Rs ' . number_format($totalClientSales, 2), 1);
+$pdf->Cell(90, 10, '', 1);
 $pdf->Ln(15);
 
 // ===== Grand Total =====
 $grandTotal = $totalMembership + $totalClientSales;
 $pdf->SetFont('Arial', 'B', 14);
-$pdf->Cell(70, 10, 'Grand Total', 1);
-$pdf->Cell(40, 10, 'Rs ' . number_format($grandTotal, 2), 1);
-$pdf->Cell(60, 10, '', 1);
+$pdf->Cell(50, 10, 'Grand Total', 1);
+$pdf->Cell(30, 10, 'Rs ' . number_format($grandTotal, 2), 1);
+$pdf->Cell(90, 10, '', 1);
 
 $pdf->Output();
 ?>
