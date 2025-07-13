@@ -12,12 +12,12 @@ $pdf->Cell(0, 10, 'Blissful Diivine Spa', 0, 1, 'C');
 $pdf->Cell(0, 10, 'Daily Sales Report - ' . date('d M Y', strtotime($date)), 0, 1, 'C');
 $pdf->Ln(10);
 
-// ===== Membership Sales =====
+// ===== Membership Sales (Amount from Appointments) =====
 $pdf->SetFont('Arial', 'B', 14);
 $pdf->Cell(0, 10, 'Membership Sales', 0, 1);
 $pdf->SetFont('Arial', 'B', 12);
 $pdf->Cell(50, 10, 'Name', 1);
-$pdf->Cell(30, 10, 'Amount Paid', 1);
+$pdf->Cell(30, 10, 'Amount Paid', 1); // Now shows Appointment.Amount
 $pdf->Cell(40, 10, 'Start Date', 1);
 $pdf->Cell(40, 10, 'End Date', 1);
 $pdf->Cell(30, 10, 'Service', 1);
@@ -25,11 +25,17 @@ $pdf->Ln();
 
 $pdf->SetFont('Arial', '', 12);
 $membershipRows = select("
-    SELECT m.Name, s.Amount, m.StartDate, m.EndDate, srv.Name AS ServiceName
-    FROM Sales s
-    JOIN Membership m ON s.MemberId = m.Id
+    SELECT 
+        m.Name,
+        COALESCE(SUM(a.Amount), 0) AS Amount, -- Total Appointment.Amount for this member
+        m.StartDate,
+        m.EndDate,
+        srv.Name AS ServiceName
+    FROM Membership m
+    LEFT JOIN Appointments a ON m.Id = a.MemberId AND DATE(a.AppointmentDate) = ? AND a.IsDelete = 1
     JOIN Services srv ON m.ServiceId = srv.Id
-    WHERE DATE(m.StartDate) = ? AND m.IsDelete = 1
+    WHERE m.IsDelete = 1
+    GROUP BY m.Id
 ", [$date]);
 
 $totalMembership = 0;

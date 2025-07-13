@@ -13,27 +13,37 @@ $pdf->Cell(0, 10, 'Blissful Diivine Spa', 0, 1, 'C');
 $pdf->Cell(0, 10, 'Monthly Sales Report - ' . date('F Y', mktime(0, 0, 0, $month, 1, $year)), 0, 1, 'C');
 $pdf->Ln(10);
 
-// ===== Membership Sales =====
+// ===== Membership Sales (Amount from Appointments) =====
 $pdf->SetFont('Arial', 'B', 14);
 $pdf->Cell(0, 10, 'Membership Sales', 0, 1);
 $pdf->SetFont('Arial', 'B', 12);
 $pdf->Cell(60, 10, 'Customer Name', 1);
-$pdf->Cell(40, 10, 'Total Amount', 1);
+$pdf->Cell(40, 10, 'Total Amount', 1); // From Appointments
 $pdf->Cell(45, 10, 'Start Date', 1);
 $pdf->Cell(45, 10, 'End Date', 1);
 $pdf->Ln();
 
 $pdf->SetFont('Arial', '', 12);
 $membershipRows = select("
-    SELECT m.Name, m.TotalAmount, m.StartDate, m.EndDate
+    SELECT 
+        m.Name,
+        COALESCE(SUM(a.Amount), 0) AS TotalAmount, -- Sum of Appointment.Amount for the month
+        m.StartDate,
+        m.EndDate
     FROM Membership m
-    WHERE MONTH(m.StartDate) = ? AND YEAR(m.StartDate) = ? AND m.IsDelete = 1",
-    [$month, $year]);
+    LEFT JOIN Appointments a 
+        ON m.Id = a.MemberId 
+        AND MONTH(a.AppointmentDate) = ? 
+        AND YEAR(a.AppointmentDate) = ? 
+        AND a.IsDelete = 1
+    WHERE m.IsDelete = 1
+    GROUP BY m.Id
+", [$month, $year]);
 
 $totalMembership = 0;
 foreach ($membershipRows as $row) {
     $pdf->Cell(60, 10, $row['Name'], 1);
-    $pdf->Cell(40, 10, $row['TotalAmount'], 1);
+    $pdf->Cell(40, 10, number_format($row['TotalAmount'], 2), 1);
     $pdf->Cell(45, 10, $row['StartDate'], 1);
     $pdf->Cell(45, 10, $row['EndDate'], 1);
     $pdf->Ln();
@@ -64,7 +74,7 @@ $clientRows = select("
 $totalClientSales = 0;
 foreach ($clientRows as $row) {
     $pdf->Cell(70, 10, $row['Name'], 1);
-    $pdf->Cell(40, 10, $row['Price'], 1);
+    $pdf->Cell(40, 10, number_format($row['Price'], 2), 1);
     $pdf->Cell(60, 10, $row['Date'], 1);
     $pdf->Ln();
     $totalClientSales += $row['Price'];

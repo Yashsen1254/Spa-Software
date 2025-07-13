@@ -92,19 +92,26 @@ $pdf->Ln();
 $pdf->SetFont('Arial', '', 12);
 $totalSales = 0;
 
-// Membership sales
+// Membership sales (using Appointments.Amount)
 $membershipSales = select("
-    SELECT Name, TotalAmount
-    FROM Membership
-    WHERE MONTH(StartDate) = ? AND YEAR(StartDate) = ? AND IsDelete = 1",
-    [$month, $year]
-);
+    SELECT m.Name, COALESCE(SUM(a.Amount), 0) AS TotalAmount
+    FROM Membership m
+    LEFT JOIN Appointments a ON m.Id = a.MemberId
+        AND MONTH(a.AppointmentDate) = ? 
+        AND YEAR(a.AppointmentDate) = ?
+        AND a.IsDelete = 1
+    WHERE m.IsDelete = 1
+    GROUP BY m.Id
+", [$month, $year]);
+
 foreach ($membershipSales as $row) {
-    $pdf->Cell(100, 10, $row['Name'], 1);
-    $pdf->Cell(40, 10, 'Rs ' . number_format($row['TotalAmount'], 2), 1);
-    $pdf->Cell(40, 10, 'Membership', 1);
-    $pdf->Ln();
-    $totalSales += $row['TotalAmount'];
+    if ($row['TotalAmount'] > 0) { // Show only if there is sales
+        $pdf->Cell(100, 10, $row['Name'], 1);
+        $pdf->Cell(40, 10, 'Rs ' . number_format($row['TotalAmount'], 2), 1);
+        $pdf->Cell(40, 10, 'Membership', 1);
+        $pdf->Ln();
+        $totalSales += $row['TotalAmount'];
+    }
 }
 
 // Client sales
@@ -114,6 +121,7 @@ $clientSales = select("
     WHERE MONTH(Date) = ? AND YEAR(Date) = ?",
     [$month, $year]
 );
+
 foreach ($clientSales as $row) {
     $pdf->Cell(100, 10, $row['Name'], 1);
     $pdf->Cell(40, 10, 'Rs ' . number_format($row['Price'], 2), 1);

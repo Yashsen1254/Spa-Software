@@ -88,31 +88,43 @@ $pdf->Ln();
 $pdf->SetFont('Arial', '', 12);
 $totalSales = 0;
 
-$membershipSales = select("SELECT Name, TotalAmount, StartDate 
-                           FROM Membership 
-                           WHERE StartDate = ? AND IsDelete = 1", 
-                           [$date]);
+// ===== Membership Sales (using Appointments.Amount) =====
+$membershipSales = select("
+    SELECT m.Name, COALESCE(SUM(a.Amount), 0) AS TotalAmount, m.StartDate
+    FROM Membership m
+    LEFT JOIN Appointments a ON m.Id = a.MemberId
+        AND DATE(a.AppointmentDate) = ?
+        AND a.IsDelete = 1
+    WHERE m.IsDelete = 1
+    GROUP BY m.Id
+", [$date]);
+
 foreach ($membershipSales as $row) {
-    $pdf->Cell(60, 10, $row['Name'], 1);
-    $pdf->Cell(40, 10, $row['TotalAmount'], 1);
-    $pdf->Cell(50, 10, $row['StartDate'], 1);
-    $pdf->Cell(40, 10, 'Membership', 1);
-    $pdf->Ln();
-    $totalSales += $row['TotalAmount'];
+    if ($row['TotalAmount'] > 0) { // Show only if there is sales
+        $pdf->Cell(60, 10, $row['Name'], 1);
+        $pdf->Cell(40, 10, number_format($row['TotalAmount'], 2), 1);
+        $pdf->Cell(50, 10, $row['StartDate'], 1);
+        $pdf->Cell(40, 10, 'Membership', 1);
+        $pdf->Ln();
+        $totalSales += $row['TotalAmount'];
+    }
 }
 
+// ===== Client Sales =====
 $clientSales = select("SELECT Name, Price, Date 
                       FROM Clients 
                       WHERE Date = ?", 
                       [$date]);
+
 foreach ($clientSales as $row) {
     $pdf->Cell(60, 10, $row['Name'], 1);
-    $pdf->Cell(40, 10, $row['Price'], 1);
+    $pdf->Cell(40, 10, number_format($row['Price'], 2), 1);
     $pdf->Cell(50, 10, $row['Date'], 1);
     $pdf->Cell(40, 10, 'Client', 1);
     $pdf->Ln();
     $totalSales += $row['Price'];
 }
+
 $pdf->SetFont('Arial', 'B', 12);
 $pdf->Cell(60, 10, 'Total Sales', 1);
 $pdf->Cell(40, 10, 'Rs ' . number_format($totalSales, 2), 1);

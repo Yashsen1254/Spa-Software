@@ -12,12 +12,12 @@ $pdf->Cell(0, 10, 'Blissful Diivine Spa', 0, 1, 'C');
 $pdf->Cell(0, 10, 'Yearly Sales Report - ' . $year, 0, 1, 'C');
 $pdf->Ln(10);
 
-// ===== Membership Sales =====
+// ===== Membership Sales (Amount from Appointments) =====
 $pdf->SetFont('Arial', 'B', 14);
 $pdf->Cell(0, 10, 'Membership Sales', 0, 1);
 $pdf->SetFont('Arial', 'B', 11);
 $pdf->Cell(50, 10, 'Customer Name', 1);
-$pdf->Cell(35, 10, 'Total Amount', 1);
+$pdf->Cell(35, 10, 'Total Amount', 1); // From Appointments
 $pdf->Cell(30, 10, 'Start Date', 1);
 $pdf->Cell(30, 10, 'End Date', 1);
 $pdf->Cell(45, 10, 'Service', 1);
@@ -25,10 +25,20 @@ $pdf->Ln();
 
 $pdf->SetFont('Arial', '', 10);
 $membershipRows = select("
-    SELECT m.Name, m.TotalAmount, m.StartDate, m.EndDate, s.Name AS ServiceName
+    SELECT 
+        m.Name,
+        COALESCE(SUM(a.Amount), 0) AS TotalAmount, -- Sum of Appointment.Amount for the year
+        m.StartDate,
+        m.EndDate,
+        s.Name AS ServiceName
     FROM Membership m
+    LEFT JOIN Appointments a 
+        ON m.Id = a.MemberId 
+        AND YEAR(a.AppointmentDate) = ? 
+        AND a.IsDelete = 1
     LEFT JOIN Services s ON m.ServiceId = s.Id
-    WHERE YEAR(m.StartDate) = ? AND m.IsDelete = 1
+    WHERE m.IsDelete = 1
+    GROUP BY m.Id
 ", [$year]);
 
 $totalMembership = 0;

@@ -29,6 +29,12 @@
                     </a>
                 </li>
                 <li>
+                    <a href="<?= urlOf("pages/employees/index.php") ?>" class="has-arrow waves-effect">
+                        <i class="bx bx-group"></i>
+                        <span key="t-dashboards">Employee Report</span>
+                    </a>
+                </li>
+                <li>
                     <a href="<?= urlOf("pages/membership/index.php") ?>" class="has-arrow waves-effect">
                         <i class="bx bx-id-card"></i>
                         <span key="t-dashboards">Membership</span>
@@ -38,12 +44,6 @@
                     <a href="<?= urlOf("pages/client/index.php") ?>" class="has-arrow waves-effect">
                         <i class="bx bx-user"></i>
                         <span key="t-dashboards">Clients</span>
-                    </a>
-                </li>
-                <li>
-                    <a href="<?= urlOf("pages/employees/index.php") ?>" class="has-arrow waves-effect">
-                        <i class="bx bx-group"></i>
-                        <span key="t-dashboards">Employee Report</span>
                     </a>
                 </li>
                 <li>

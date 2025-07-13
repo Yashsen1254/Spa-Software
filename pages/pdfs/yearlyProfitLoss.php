@@ -97,20 +97,27 @@ $pdf->Ln();
 $pdf->SetFont('Arial', '', 10);
 $totalSales = 0;
 
-// Membership Sales
+// Membership Sales (using Appointments.Amount)
 $membershipSales = select("
-    SELECT Name, TotalAmount, StartDate
-    FROM Membership
-    WHERE YEAR(StartDate) = ? AND IsDelete = 1", [$year]);
+    SELECT m.Name, COALESCE(SUM(a.Amount), 0) AS TotalAmount, MIN(a.AppointmentDate) AS FirstDate
+    FROM Membership m
+    LEFT JOIN Appointments a ON m.Id = a.MemberId
+        AND YEAR(a.AppointmentDate) = ?
+        AND a.IsDelete = 1
+    WHERE m.IsDelete = 1
+    GROUP BY m.Id
+", [$year]);
 
 if (!empty($membershipSales)) {
     foreach ($membershipSales as $row) {
-        $pdf->Cell(60, 10, $row['Name'], 1);
-        $pdf->Cell(35, 10, 'Rs ' . number_format($row['TotalAmount'], 2), 1);
-        $pdf->Cell(45, 10, $row['StartDate'] ?? '-', 1);
-        $pdf->Cell(50, 10, 'Membership', 1);
-        $pdf->Ln();
-        $totalSales += $row['TotalAmount'];
+        if ($row['TotalAmount'] > 0) { // Show only if sales exist
+            $pdf->Cell(60, 10, $row['Name'], 1);
+            $pdf->Cell(35, 10, 'Rs ' . number_format($row['TotalAmount'], 2), 1);
+            $pdf->Cell(45, 10, $row['FirstDate'] ?? '-', 1);
+            $pdf->Cell(50, 10, 'Membership', 1);
+            $pdf->Ln();
+            $totalSales += $row['TotalAmount'];
+        }
     }
 }
 
