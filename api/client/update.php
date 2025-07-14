@@ -1,26 +1,35 @@
 <?php
-    require '../../includes/init.php';
-    header('Content-Type: application/json');
+require '../../includes/init.php';
+header('Content-Type: application/json');
 
-    $Id = $_POST['Id'];
-    $Name = $_POST['Name'];
-    $Mobile = $_POST['Mobile'];
-    $RoomNo = $_POST['RoomNo'];
-    $TherapistName = $_POST['TherapistName'];
-    $Date = $_POST['Date'];
-    $InTime = $_POST['InTime'];
-    $OutTime = $_POST['OutTime'];
-    $Price = $_POST['Price'];
-    $Payment = $_POST['Payment'];
+// Get data
+$Id = $_POST['Id'] ?? null;
+$Name = $_POST['Name'] ?? '';
+$Mobile = $_POST['Mobile'] ?? '';
+$RoomNo = $_POST['RoomNo'] ?? '';
+$EmployeeId = $_POST['EmployeeId'] ?? '';
+$Date = $_POST['Date'] ?? '';
+$InTime = $_POST['InTime'] ?? '';
+$OutTime = $_POST['OutTime'] ?? '';
+$Massage = $_POST['Massage'] ?? '';
+$Price = $_POST['Price'] ?? '';
+$PaymentMode = $_POST['PaymentMode'] ?? '';
 
-    $query = "UPDATE Clients SET Name = ?, Mobile = ?, RoomNo = ?, TherapistName = ?, Date = ?, InTime = ?, OutTime = ?, Price = ?, Payment = ? WHERE Id = ?";
-    $param = [$Name, $Mobile, $RoomNo, $TherapistName, $Date, $InTime, $OutTime, $Price, $Payment, $Id];
+// Validate ID
+if (!$Id) {
+    echo json_encode(["status" => "error", "message" => "Client ID is missing."]);
+    exit;
+}
 
-    $result = execute($query, $param);
+// Update query
+$query = "UPDATE Clients SET Name = ?, Mobile = ?, RoomNo = ?, EmployeeId = ?, Date = ?, InTime = ?, OutTime = ?, Massage = ?, Price = ?, PaymentMode = ? WHERE Id = ?";
+$params = [$Name, $Mobile, $RoomNo, $EmployeeId, $Date, $InTime, $OutTime, $Massage, $Price, $PaymentMode, $Id];
 
-    if($result) {
-        echo json_encode(["status" => "success", "message" => "Client Updated Successfully"]);
-    } else {
-        echo json_encode(["status" => "error", "message" => "Something Went Wrong"]);
-    }
+$result = execute($query, $params);
+
+if ($result) {
+    echo json_encode(["status" => "success", "message" => "Client updated successfully."]);
+} else {
+    echo json_encode(["status" => "error", "message" => "Update failed."]);
+}
 ?>
