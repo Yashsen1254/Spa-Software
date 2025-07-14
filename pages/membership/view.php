@@ -4,16 +4,19 @@ require '../../includes/init.php';
 include pathOf("includes/header.php");
 include pathOf("includes/navbar.php");
 
-// Validate Membership ID via POST only
-if (!isset($_POST["Id"])) {
+// ✅ Validate Membership ID from POST or GET
+if (isset($_POST["Id"])) {
+    $Id = (int) $_POST["Id"];
+} elseif (isset($_GET['Id'])) {
+    $Id = (int) $_GET['Id'];
+} else {
     echo "<script>alert('Membership ID not found.'); window.location.href='index.php';</script>";
     exit;
 }
 
-$Id = (int) $_POST["Id"];
 $index = 0;
 
-// Fetch membership details
+// ✅ Fetch membership details
 $membership = selectOne(
     "SELECT Membership.*, Services.Name AS ServiceName, Services.NoOfAppointments 
      FROM Membership 
@@ -31,23 +34,43 @@ $noOfAppointments = (int)$membership['NoOfAppointments'];
 $employees = select("SELECT * FROM Employee");
 $massages = select("SELECT * FROM Massage");
 
-// Massage types
-$allMassages = ["Swedish", "Deep Tissue", "Aromatherapy", "Hot Stone", "Thai"];
+// ✅ Handle Update Appointment
+if (isset($_POST['update_appointment'])) {
+    $appointmentId = $_POST['appointment_id'];
+    $employeeId = $_POST['employee_id'];
+    $roomNo = $_POST['room_no'];
+    $massage = $_POST['massage'];
+    $appointmentDate = $_POST['appointment_date'];
+    $inTime = $_POST['appointment_time'];
+    $outTime = $_POST['out_time'];
+    $amount = $_POST['amount'];
 
-// Fetch massages already booked for this member
-$bookedMassagesResult = select(
-    "SELECT DISTINCT Massage FROM Appointments WHERE MemberId = ? AND IsDelete = 1",
-    [$Id]
-);
-$bookedMassages = array_column($bookedMassagesResult, 'Massage');
-$availableMassages = array_values(array_diff($allMassages, $bookedMassages)); // Remaining massages
+    execute(
+        "UPDATE Appointments 
+         SET EmployeeId=?, RoomNo=?, Massage=?, AppointmentDate=?, InTime=?, OutTime=?, Amount=? 
+         WHERE Id=?",
+        [$employeeId, $roomNo, $massage, $appointmentDate . ' ' . $inTime, $inTime, $outTime, $amount, $appointmentId]
+    );
 
-// Handle appointments submission
+    echo "<script>alert('Appointment updated successfully!'); window.location.href='?Id=$Id';</script>";
+    exit;
+}
+
+// ✅ Handle Delete Appointment
+if (isset($_POST['delete_appointment'])) {
+    $appointmentId = $_POST['appointment_id'];
+    execute("DELETE FROM Appointments WHERE Id=?", [$appointmentId]);
+
+    echo "<script>alert('Appointment deleted successfully!'); window.location.href='?Id=$Id';</script>";
+    exit;
+}
+
+// ✅ Handle New Appointment Insertion
 if (isset($_POST['save_appointments'])) {
     $employeeIds = $_POST['employee_id'] ?? [];
     $roomNos = $_POST['room_no'] ?? [];
     $appointmentDates = $_POST['appointment_date'] ?? [];
-    $massages = $_POST['massage'] ?? [];
+    $massagesInput = $_POST['massage'] ?? [];
     $inTimes = $_POST['appointment_time'] ?? [];
     $outTimes = $_POST['out_time'] ?? [];
     $amounts = $_POST['amount'] ?? [];
@@ -56,59 +79,46 @@ if (isset($_POST['save_appointments'])) {
 
     for ($i = 0; $i < count($employeeIds); $i++) {
         if (
-            !empty($employeeIds[$i]) && 
-            !empty($roomNos[$i]) && 
-            !empty($appointmentDates[$i]) && 
-            !empty($inTimes[$i]) && 
+            !empty($employeeIds[$i]) &&
+            !empty($roomNos[$i]) &&
+            !empty($appointmentDates[$i]) &&
+            !empty($inTimes[$i]) &&
             !empty($outTimes[$i]) &&
             !empty($amounts[$i]) &&
-            !empty($massages[$i])
+            !empty($massagesInput[$i])
         ) {
-            // Check for duplicate massage (backend validation)
-            if (in_array($massages[$i], $bookedMassages)) {
-                echo "<script>alert('Massage \"{$massages[$i]}\" has already been booked.'); window.history.back();</script>";
-                exit;
-            }
-
             $datetime = $appointmentDates[$i] . ' ' . $inTimes[$i];
 
             // Insert appointment
             execute(
                 "INSERT INTO Appointments (MemberId, EmployeeId, RoomNo, Massage, AppointmentDate, InTime, OutTime, Amount, IsDelete) 
-                 VALUES (?, ?, ?, ?, ?, ?, ?, ?, 1)", 
-                [$Id, $employeeIds[$i], $roomNos[$i], $massages[$i], $datetime, $inTimes[$i], $outTimes[$i], $amounts[$i]]
+                 VALUES (?, ?, ?, ?, ?, ?, ?, ?, 1)",
+                [$Id, $employeeIds[$i], $roomNos[$i], $massagesInput[$i], $datetime, $inTimes[$i], $outTimes[$i], $amounts[$i]]
             );
 
-            $totalDeducted += (float)$amounts[$i]; // Add to deduction total
-            $bookedMassages[] = $massages[$i]; // Update booked massages in memory
+            $totalDeducted += (float)$amounts[$i];
         }
     }
 
-    // Deduct total amount from membership TotalAmount
+    // Deduct total amount
     $newTotalAmount = (float)$membership['TotalAmount'] - $totalDeducted;
-    if ($newTotalAmount < 0) {
-        $newTotalAmount = 0; // Prevent negative TotalAmount
-    }
+    if ($newTotalAmount < 0) $newTotalAmount = 0;
 
-    execute(
-        "UPDATE Membership SET TotalAmount = ? WHERE Id = ?",
-        [$newTotalAmount, $Id]
-    );
+    execute("UPDATE Membership SET TotalAmount=? WHERE Id=?", [$newTotalAmount, $Id]);
 
-    echo "<script>alert('Appointments saved successfully!'); window.location.href='index.php';</script>";
+    echo "<script>alert('Appointments saved successfully!'); window.location.href='?Id=$Id';</script>";
     exit;
 }
 
-// Load current appointments
+// ✅ Load current appointments
 $appointments = select(
     "SELECT Appointments.*, Employee.Name AS EmployeeName 
      FROM Appointments 
      JOIN Employee ON Appointments.EmployeeId = Employee.Id 
-     WHERE Appointments.MemberId = ? AND Appointments.IsDelete = 1", 
+     WHERE Appointments.MemberId = ? AND Appointments.IsDelete = 1",
     [$Id]
 );
 ?>
-
 
 <body data-sidebar="dark">
 <div id="layout-wrapper">
@@ -117,39 +127,24 @@ $appointments = select(
             <div class="d-flex">
                 <div class="navbar-brand-box">
                     <a href="index.php" class="logo logo-dark">
-                        <span class="logo-sm"><img src="assets/images/logo.svg" alt="" height="22"></span>
-                        <span class="logo-lg"><img src="assets/images/logo-dark.png" alt="" height="17"></span>
-                    </a>
-                    <a href="index.php" class="logo logo-light">
-                        <span class="logo-sm"><img src="assets/images/logo-light.svg" alt="" height="22"></span>
-                        <span class="logo-lg"><img src="assets/images/logo-light.png" alt="" height="19"></span>
+                        <span class="logo-sm"><img src="assets/images/logo.svg" height="22"></span>
+                        <span class="logo-lg"><img src="assets/images/logo-dark.png" height="17"></span>
                     </a>
                 </div>
             </div>
         </div>
     </header>
+
     <div class="main-content">
         <div class="page-content">
             <div class="container-fluid">
 
-                <!-- Membership Details -->
-                <div class="row">
-                    <div class="col-12">
-                        <div class="page-title-box d-sm-flex align-items-center justify-content-between">
-                            <h4 class="mb-sm-0 font-size-18">MEMBERSHIP</h4>
-                            <div class="page-title-right">
-                                <a href="index.php" class="btn btn-primary w-md">GO BACK</a>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Membership Info Table -->
+                <!-- ✅ Membership Details -->
                 <div class="row">
                     <div class="col-12">
                         <div class="card">
-                            <div class="card-body">
-                                <table class="table table-bordered w-100">
+                            <div class="card-body table-responsive">
+                                <table class="table table-bordered">
                                     <thead>
                                         <tr>
                                             <th>Sr No.</th>
@@ -184,42 +179,70 @@ $appointments = select(
                     </div>
                 </div>
 
-                <!-- Appointment Management -->
+                <!-- ✅ Appointments Management -->
                 <div class="row">
                     <div class="col-12">
                         <div class="card">
                             <div class="card-body">
                                 <h4 class="card-title">Appointments</h4>
-                                <form method="POST">
-                                    <input type="hidden" name="Id" value="<?= $Id ?>">
+                                <div class="table-responsive">
                                     <table id="appointmentsTable" class="table table-bordered">
                                         <thead>
                                             <tr>
-                                                <th>Employee Name</th>
+                                                <th>Employee</th>
                                                 <th>Room No</th>
                                                 <th>Massage</th>
                                                 <th>Date</th>
                                                 <th>In Time</th>
                                                 <th>Out Time</th>
                                                 <th>Amount</th>
+                                                <th>Actions</th>
                                             </tr>
                                         </thead>
-                                        <tbody id="appointmentsBody">
+                                        <tbody>
                                             <?php foreach ($appointments as $appointment): ?>
-                                                <tr>
-                                                    <td><?= $appointment['EmployeeName'] ?></td>
-                                                    <td><?= $appointment['RoomNo'] ?></td>
-                                                    <td><?= $appointment['Massage'] ?></td>
-                                                    <td><?= date('Y-m-d', strtotime($appointment['AppointmentDate'])) ?></td>
-                                                    <td><?= $appointment['InTime'] ?></td>
-                                                    <td><?= $appointment['OutTime'] ?></td>
-                                                    <td>₹<?= number_format($appointment['Amount'], 2) ?></td>
-                                                </tr>
+                                            <tr>
+                                                <form method="POST">
+                                                    <input type="hidden" name="Id" value="<?= $Id ?>">
+                                                    <input type="hidden" name="appointment_id" value="<?= $appointment['Id'] ?>">
+                                                    <td>
+                                                        <select name="employee_id" class="form-control" required>
+                                                            <?php foreach ($employees as $emp): ?>
+                                                                <option value="<?= $emp['Id'] ?>" <?= ($emp['Id'] == $appointment['EmployeeId']) ? 'selected' : '' ?>>
+                                                                    <?= $emp['Name'] ?>
+                                                                </option>
+                                                            <?php endforeach; ?>
+                                                        </select>
+                                                    </td>
+                                                    <td><input type="number" name="room_no" class="form-control" value="<?= $appointment['RoomNo'] ?>" required></td>
+                                                    <td>
+                                                        <select name="massage" class="form-control" required>
+                                                            <?php foreach ($massages as $m): ?>
+                                                                <option value="<?= $m['Name'] ?>" <?= ($m['Name'] == $appointment['Massage']) ? 'selected' : '' ?>>
+                                                                    <?= $m['Name'] ?>
+                                                                </option>
+                                                            <?php endforeach; ?>
+                                                        </select>
+                                                    </td>
+                                                    <td><input type="date" name="appointment_date" class="form-control" value="<?= date('Y-m-d', strtotime($appointment['AppointmentDate'])) ?>" required></td>
+                                                    <td><input type="time" name="appointment_time" class="form-control" value="<?= $appointment['InTime'] ?>" required></td>
+                                                    <td><input type="time" name="out_time" class="form-control" value="<?= $appointment['OutTime'] ?>" required></td>
+                                                    <td><input type="number" name="amount" class="form-control" value="<?= $appointment['Amount'] ?>" step="0.01" required></td>
+                                                    <td>
+                                                        <button type="submit" name="update_appointment" class="btn btn-sm btn-primary">Update</button>
+                                                        <button type="submit" name="delete_appointment" class="btn btn-sm btn-danger" onclick="return confirm('Are you sure you want to delete this appointment?')">Delete</button>
+                                                    </td>
+                                                </form>
+                                            </tr>
                                             <?php endforeach; ?>
                                         </tbody>
                                     </table>
-                                    <button type="button" class="btn btn-secondary mb-3" onclick="addRow()">Add Row</button>
-                                    <button type="submit" name="save_appointments" class="btn btn-success mb-3">Save Appointments</button>
+                                </div>
+                                <button type="button" class="btn btn-secondary mb-3" onclick="addRow()">Add Row</button>
+                                <form method="POST">
+                                    <input type="hidden" name="Id" value="<?= $Id ?>">
+                                    <div id="newAppointments"></div>
+                                    <button type="submit" name="save_appointments" class="btn btn-success">Save New Appointments</button>
                                 </form>
                             </div>
                         </div>
@@ -230,74 +253,32 @@ $appointments = select(
         </div>
     </div>
 </div>
-<div class="rightbar-overlay"></div>
 
 <script>
-    const maxAppointments = <?= $noOfAppointments ?>;
-    const existingAppointments = <?= count($appointments) ?>;
-    let availableMassages = <?= json_encode($availableMassages) ?>;
+function addRow() {
+    const employees = <?= json_encode($employees) ?>;
+    const massages = <?= json_encode(array_column($massages, 'Name')) ?>;
 
-    function addRow() {
-        const addedRows = document.querySelectorAll('#appointmentsTable tbody tr.new-row').length;
-        const totalAppointments = existingAppointments + addedRows;
-
-        if (totalAppointments >= maxAppointments) {
-            alert("You cannot add more appointments. Maximum allowed is " + maxAppointments + ".");
-            return;
-        }
-
-        if (availableMassages.length === 0) {
-            alert("All massage types have already been booked.");
-            return;
-        }
-
-        const employees = <?= json_encode($employees) ?>;
-        const tbody = document.querySelector('#appointmentsTable tbody');
-        const row = document.createElement('tr');
-        row.classList.add('new-row');
-        row.innerHTML = `
-            <td>
-                <select name="employee_id[]" class="form-control" required>
-                    <option value="">Select Employee</option>
-                    ${employees.map(emp => `<option value="${emp.Id}">${emp.Name}</option>`).join('')}
-                </select>
-            </td>
-            <td><input type="number" name="room_no[]" class="form-control" required></td>
-            <td>
-    <select name="massage[]" class="form-control massage-select" required onchange="removeSelectedMassage(this)">
-        <option value="">Select Massage</option>
-        <?= implode("", array_map(fn($m) => "<option value=\"{$m['Name']}\">{$m['Name']}</option>", $massages)) ?>
-    </select>
-</td>
-
-            <td><input type="date" name="appointment_date[]" class="form-control" required></td>
-            <td><input type="time" name="appointment_time[]" class="form-control" required></td>
-            <td><input type="time" name="out_time[]" class="form-control" required></td>
-            <td><input type="number" name="amount[]" class="form-control" placeholder="Enter Amount" step="0.01" required></td>
-        `;
-        tbody.appendChild(row);
-    }
-
-    function removeSelectedMassage(selectElement) {
-        const selectedMassage = selectElement.value;
-
-        if (selectedMassage) {
-            // Remove selected massage from availableMassages
-            availableMassages = availableMassages.filter(m => m !== selectedMassage);
-
-            // Disable selected option in all other dropdowns
-            document.querySelectorAll('.massage-select').forEach(sel => {
-                if (sel !== selectElement) {
-                    const option = sel.querySelector(`option[value="${selectedMassage}"]`);
-                    if (option) option.remove();
-                }
-            });
-        }
-    }
+    const rowHTML = `
+        <div class="row mb-2">
+            <div class="col-md-2"><select name="employee_id[]" class="form-control" required>
+                <option value="">Select Employee</option>
+                ${employees.map(emp => `<option value="${emp.Id}">${emp.Name}</option>`).join('')}
+            </select></div>
+            <div class="col-md-1"><input type="number" name="room_no[]" class="form-control" required></div>
+            <div class="col-md-2"><select name="massage[]" class="form-control" required>
+                <option value="">Select Massage</option>
+                ${massages.map(m => `<option value="${m}">${m}</option>`).join('')}
+            </select></div>
+            <div class="col-md-2"><input type="date" name="appointment_date[]" class="form-control" required></div>
+            <div class="col-md-1"><input type="time" name="appointment_time[]" class="form-control" required></div>
+            <div class="col-md-1"><input type="time" name="out_time[]" class="form-control" required></div>
+            <div class="col-md-1"><input type="number" name="amount[]" class="form-control" placeholder="Amount" step="0.01" required></div>
+        </div>
+    `;
+    document.getElementById('newAppointments').insertAdjacentHTML('beforeend', rowHTML);
+}
 </script>
 
-
-<?php
-include pathOf("includes/scripts.php");
-include pathOf("includes/pageend.php");
-?>
+<?php include pathOf("includes/scripts.php"); ?>
+<?php include pathOf("includes/pageend.php"); ?>
